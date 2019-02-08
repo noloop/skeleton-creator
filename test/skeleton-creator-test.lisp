@@ -10,12 +10,15 @@
 ;; Simple Test Runner
 (defun run ()
   (suite
-   (test "Test string-match-markings" #'test-string-match-markings)
    (test "Test string-replace-all" #'test-string-replace-all)
    (test "Test write-string-in-file and get-string-from-file" #'test-write-string-in-file)
    (test "Test pathname-is-file" #'test-pathname-is-file)
    (test "Test not-match-list-ignore" #'test-not-match-list-ignore)
-   (test "Test walk-destination-directory" #'test-walk-destination-directory)))
+   (test "Test walk-destination-directory" #'test-walk-destination-directory)
+   (test "Test merge-path-with-new-file-name" #'test-merge-path-with-new-file-name)
+   (test "Test merge-path-with-new-file-name-with-path-directory" #'test-merge-path-with-new-file-name-with-path-directory)
+   (test "Test string-match-markings" #'test-string-match-markings)
+   (test "Test replace-markings-in-file-names" #'test-replace-markings-in-file-names)))
 
 (defun test (stg test-fn)
   (let ((result (funcall test-fn)))
@@ -65,11 +68,6 @@
          (null path-file-not-exist)
          (null path-directory-not-exist))))
 
-(defun test-string-match-markings ()
-  (let ((hash-markings (make-hash-table)))
-    (setf (gethash :PROJECT-NAME hash-markings) "new-p")
-    (and (not (null (skeleton-creator::string-match-markings "PROJECT-NAME" hash-markings))))))
-
 (defun test-not-match-list-ignore ()
   (let* ((destination-directory "/tmp/not-match-replace-ignore/")
          (ignores '(".git/" "file.lisp" "child-directory/child-file.lisp" "file-without-type"))
@@ -116,7 +114,27 @@
           destination-directory
           (namestring (cadr paths-collected))))))
 
-#|
+(defun test-merge-path-with-new-file-name ()
+  (let* ((path "/tmp/rename-path-file/file.lisp")
+        (new-file-name "new-file")
+         (result (skeleton-creator::merge-path-with-new-file-name
+                 path
+                 new-file-name)))
+    (not (null (string= "/tmp/rename-path-file/new-file.lisp" (namestring result))))))
+
+(defun test-merge-path-with-new-file-name-with-path-directory ()
+  (let* ((path "/tmp/rename-path-file/")
+         (new-file-name "new-file")
+         (result (skeleton-creator::merge-path-with-new-file-name
+                  path
+                  new-file-name)))
+    (not (null (string= "/tmp/rename-path-file/new-file" (namestring result))))))
+
+(defun test-string-match-markings ()
+  (let ((hash-markings (make-hash-table)))
+    (setf (gethash :PROJECT-NAME hash-markings) "new-p")
+    (and (not (null (skeleton-creator::string-match-markings "PROJECT-NAME" hash-markings))))))
+
 (defun test-replace-markings-in-file-names ()
   (let* ((path-directory "/tmp/replace-markings-in-file-names/")
          (path-file-1 (concatenate 'string path-directory "PROJECT-NAME.lisp"))
@@ -133,9 +151,5 @@
     (setf result (and
                   (cl-fad:file-exists-p (concatenate 'string path-directory "new-p.lisp"))
                   (cl-fad:file-exists-p (concatenate 'string path-child-directory "new-p.lisp"))))
-    ;(delete-project-directory path-directory)
-    result))
-  |#
-
-
-
+    (delete-project-directory path-directory)
+    (not (null result))))

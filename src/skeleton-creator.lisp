@@ -94,26 +94,36 @@ or leave empty to keep the previous configuration or default configuration.~%")
                         (get-conf-hash (get-field skeleton-creator :conf)))))
     (setf (gethash :PROJECT-NAME hash-markings) (get-field skeleton-creator :project-name))
     (setf (gethash :DESCRIPTION hash-markings) (get-field skeleton-creator :project-description))
-    (replace-markings-in-file-names destination-directory hash-markings ignores)
-    ;(replace-markings-in-file destination-directory hash-markings ignores)
+    ;;(replace-markings-in-file-names destination-directory hash-markings ignores)
+    ;;(replace-markings-in-file destination-directory hash-markings ignores)
     ))
 
 (defun replace-markings-in-file-names (destination-directory hash-markings &optional (ignores '()))
   (walk-destination-directory
    destination-directory
    #'(lambda (el)
-       (rename-file el (cl-fad:merge-pathnames-as-file
-                        (cl-fad:pathname-directory-pathname el)
-                        (concatenate 'string
-                                     (string-match-markings (pathname-name el) hash-markings)
-                                     (pathname-type el)))))
+       (let ((new-file-name (string-match-markings (pathname-name el) hash-markings)))
+         (if (and (pathname-is-file el)
+                  (not (null new-file-name)))
+             (rename-file el (merge-path-with-new-file-name el new-file-name)))))
    ignores))
+
+(defun merge-path-with-new-file-name (path new-file-name)
+  "Merge new-file-name with directory of path, return new path."
+  (let ((path-type (pathname-type path)))
+    (cl-fad:merge-pathnames-as-file
+     (cl-fad:pathname-directory-pathname path)
+     (concatenate 'string
+                  new-file-name
+                  (if (not (null path-type)) ".")
+                  path-type))))
 
 (defun string-match-markings (stg hash-markings)
   (maphash #'(lambda (key value)
                (if (string= stg (string key))
                    (return-from string-match-markings value)))
            hash-markings))
+
 #|
 (defun replace-markings-in-file (destination-directory hash-markings &optional (ignores '()))
   (walk-destination-directory
@@ -153,27 +163,23 @@ or leave empty to keep the previous configuration or default configuration.~%")
 (defun walk-destination-directory (destination-directory fn &optional (ignores '()))
   (cl-fad:walk-directory destination-directory fn
                   :directories :BREADTH-FIRST
-                  :test (not-match-list-ignore
-                         destination-directory
-                         ignores)))
+                  :test (not-match-list-ignore destination-directory ignores)))
 
 (defun not-match-list-ignore (destination-directory ignores)
   "Returns a lambda that checks whether an element(el) merged to a destination-directory is equal to some element of the ignore list."
-  (let ((destination destination-directory))
     (lambda (el)
-      (if (null ignores) (return-from not-match-list-ignore t))
-      (dolist-ignores el destination ignores))))
+      (dolist-ignores el destination-directory ignores)))
 
 (defun dolist-ignores (path destination ignores)
-  (let ((result nil))
+  (let ((result t))
     (dolist (i ignores)
-      (if (not-pathname-equal path (concatenate 'string destination i))
-          (setf result t)
-          (progn (setf result nil) (return))))
+      (if (cl-fad:pathname-equal path (concatenate 'string destination i))
+          (progn (setf result nil) (return))
+          (setf result t)))
+    ;(format t "~a - ~a~%" path result)
     result))
 
-(defun not-pathname-equal (path-1 path-2)
-  (not (cl-fad:pathname-equal (pathname path-1) (pathname path-2))))
+;;(defun not-pathname-equal (path-1 path-2) (not (cl-fad:pathname-equal (pathname path-1) (pathname path-2))))
 
 (defun delete-project-directory (project-directory)
   (cl-fad:delete-directory-and-files project-directory))
