@@ -1,46 +1,13 @@
 (in-package #:noloop.skeleton-creator)
-#|
 ;;(init-conf "/home/noloop/lisp/portacle/projects/test-git/" "skeleton-creator.conf")
 
-(replace-all "PROJECT-NAME" "skeleton-creator" ";;;; -*- Mode: Lisp; Syntax: ANSI-Common-Lisp; Base: 10 -*-
-
-(defsystem :PROJECT-NAME
-  :author \"noloop <noloop@zoho.com>\"
-  :maintainer \"noloop <noloop@zoho.com>\"
-  :license \"GNU General Public License v3.0\"
-  :version \"0.0.0\"
-  :homepage \"https://github.com/noloop/PROJECT-NAME\"
-  :bug-tracker \"https://github.com/noloop/PROJECT-NAME/issues\"
-  :source-control (:git \"git@github.com:noloop/PROJECT-NAME.git\")
-  :description \"PROJECT-DESCRIPTION.\"
-  :components ((:module \"src\"
-                :components
-                ((:file \"package\")
-                 (:file \"file1\" :depends-on (\"package\"))
-                 (:file \"file2\" :depends-on (\"package\" \"file1\")))))
-  :long-description
-  #.(uiop:read-file-string
-     (uiop:subpathname *load-pathname* \"README.md\"))
-  :in-order-to ((test-op (test-op \"PROJECT-NAME/test\"))))\"
-")
-
-((lambda (el)
-   (if (not (null (pathname-is-file el)))
-       (let* ((old-stg (get-string-from-file el))
-              (new-stg old-stg))
-         (maphash #'(lambda (key value)
-                      (setf new-stg (string-replace-all new-stg (string value) (string key))))
-                  *hash*)
-         (write-string-in-file el new-stg))))
- "/home/noloop/lisp/portacle/projects/test-git/skeleton-creator.conf")
-|#
-(defun init-skeleton-creator (directory)
+(defun init-skeleton-creator (conf-directory)
   (reverse (pairlis (list :conf
                           :project-destination-directory
                           :project-name
                           :project-description
                           :replace-ignore)
-                    (list (init-conf directory "skeleton-creator.conf")
+                    (list (init-conf conf-directory "skeleton-creator.conf")
                           "PROJECT-NAME"
                           "DESCRIPTION"
                           "/tmp/"
@@ -85,18 +52,16 @@ or leave empty to keep the previous configuration or default configuration.~%")
                                destination-directory))))
  
 (defun replace-markings (skeleton-creator destination-directory)
-  ";;procurar marcacoes de PROJECT-NAME/DESCRIPTION dentro de todos os arquivos recursivamente
-  ;;substituir marcacoes encontradas por name e description
-  ;;procurar todas marcacoes das keys de conf-hash em todos os arquivos recursivamente
-  ;;substiuir marcacoes encontradas pelos valores de conf-hash"
+  "1 - Replace the file names with the markings values.
+2 - Replace the strings within the contents of the files with markings values.
+Markings are PROJECT-NAME and DESCRIPTION and all elements of the skeleton.conf configuration file."
   (let ((ignores (get-field skeleton-creator :replace-ignore))
         (hash-markings (alexandria:copy-hash-table
                         (get-conf-hash (get-field skeleton-creator :conf)))))
     (setf (gethash :PROJECT-NAME hash-markings) (get-field skeleton-creator :project-name))
     (setf (gethash :DESCRIPTION hash-markings) (get-field skeleton-creator :project-description))
-    ;;(replace-markings-in-file-names destination-directory hash-markings ignores)
-    ;;(replace-markings-in-file destination-directory hash-markings ignores)
-    ))
+    (replace-markings-in-file-names destination-directory hash-markings ignores)
+    (replace-markings-in-file destination-directory hash-markings ignores)))
 
 (defun replace-markings-in-file-names (destination-directory hash-markings &optional (ignores '()))
   (walk-destination-directory
@@ -124,19 +89,22 @@ or leave empty to keep the previous configuration or default configuration.~%")
                    (return-from string-match-markings value)))
            hash-markings))
 
-#|
 (defun replace-markings-in-file (destination-directory hash-markings &optional (ignores '()))
   (walk-destination-directory
-   #'(lambda (el)
-       (if (not (null (pathname-is-file el)))
-           (let* ((old-stg (get-string-from-file el))
-                  (new-stg old-stg))
-             (maphash #'(lambda (key value)
-                          (setf new-stg (string-replace-all old-stg (string key) (string value))))
-                      hash-markings)
-             (write-string-in-file el new-stg))))
+   destination-directory
+   #'(lambda (path)
+       (if (pathname-is-file path)
+           (write-string-in-file path (file-string-replace-markings path hash-markings))))
    ignores))
-|#
+
+(defun file-string-replace-markings (path hash-markings)
+  "Return new string from string file after replace markings."
+  (let ((new-stg (get-string-from-file path)))
+    (maphash #'(lambda (key value)
+                 (setf new-stg (string-replace-all new-stg (string key) (string value))))
+             hash-markings)
+    new-stg))
+
 (defun pathname-is-file (path)
   (and (not (cl-fad:directory-exists-p path))
        (cl-fad:file-exists-p path)))
@@ -176,10 +144,7 @@ or leave empty to keep the previous configuration or default configuration.~%")
       (if (cl-fad:pathname-equal path (concatenate 'string destination i))
           (progn (setf result nil) (return))
           (setf result t)))
-    ;(format t "~a - ~a~%" path result)
     result))
-
-;;(defun not-pathname-equal (path-1 path-2) (not (cl-fad:pathname-equal (pathname path-1) (pathname path-2))))
 
 (defun delete-project-directory (project-directory)
   (cl-fad:delete-directory-and-files project-directory))
