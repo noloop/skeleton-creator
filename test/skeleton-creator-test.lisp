@@ -141,7 +141,7 @@
 
 (defun test-replace-markings-in-file-names ()
   (let* ((path-directory "/tmp/replace-markings-in-file-names/")
-         (path-file-1 (concatenate 'string path-directory "PROJECT-NAME.lisp"))
+         (path-file-1 (concatenate 'string path-directory "PROJECT-NAME-test.lisp"))
          (path-child-directory (concatenate 'string path-directory "child-dir/"))
          (path-file-2 (concatenate 'string path-child-directory "PROJECT-NAME.lisp"))
          (hash-markings (make-hash-table))
@@ -153,13 +153,13 @@
     (setf (gethash :PROJECT-NAME hash-markings) "new-p")
     (replace-markings-in-file-names path-directory hash-markings)
     (setf result (and
-                  (cl-fad:file-exists-p (concatenate 'string path-directory "new-p.lisp"))
+                  (cl-fad:file-exists-p (concatenate 'string path-directory "new-p-test.lisp"))
                   (cl-fad:file-exists-p (concatenate 'string path-child-directory "new-p.lisp"))))
     (delete-project-directory path-directory)
     (not (null result))))
 
 (defun test-replace-markings-in-file-names-with-ignores ()
-  (let* ((path-directory "/tmp/replace-markings-in-file-names/")
+  (let* ((path-directory "/tmp/replace-markings-in-file-names-with-ignores/")
          (path-file-1 (concatenate 'string path-directory "PROJECT-NAME.lisp"))
          (path-child-directory (concatenate 'string path-directory "child-dir/"))
          (path-file-2 (concatenate 'string path-child-directory "PROJECT-NAME.lisp"))

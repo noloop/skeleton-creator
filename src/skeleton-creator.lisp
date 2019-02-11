@@ -75,10 +75,13 @@ Markings are PROJECT-NAME and DESCRIPTION and all elements of the skeleton.conf 
   (walk-destination-directory
    destination-directory
    #'(lambda (el)
-       (let ((new-file-name (string-match-markings (pathname-name el) hash-markings)))
+       (let* ((key (string-match-markings (pathname-name el) hash-markings))
+              (new-value (gethash key hash-markings)))
          (if (and (pathname-is-file el)
-                  (not (null new-file-name)))
-             (rename-file el (merge-path-with-new-file-name el new-file-name)))))
+                  (not (null new-value)))
+               (rename-file el (merge-path-with-new-file-name
+                               el
+                               (string-replace-all (namestring (pathname-name el)) (string key) new-value))))))
    ignores))
 
 (defun merge-path-with-new-file-name (path new-file-name)
@@ -93,8 +96,8 @@ Markings are PROJECT-NAME and DESCRIPTION and all elements of the skeleton.conf 
 
 (defun string-match-markings (stg hash-markings)
   (maphash #'(lambda (key value)
-               (if (string= stg (string key))
-                   (return-from string-match-markings value)))
+               (if (search (string key) stg)
+                   (return-from string-match-markings key)))
            hash-markings))
 
 (defun replace-markings-in-file (destination-directory hash-markings &optional (ignores '()))
