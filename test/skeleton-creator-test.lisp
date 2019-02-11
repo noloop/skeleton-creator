@@ -30,7 +30,7 @@
     result))
 
 (defun suite (&rest results)
-  (format t "Test result: ~a"
+  (format t "Test result: ~a~%~%"
           (every #'(lambda (el) (equal t el)) results)))
 
 ;; Utils
@@ -243,3 +243,31 @@
           (string= "new-project by your" (skeleton-creator::get-string-from-file expected-path-file-2))))
     (delete-project-directory path-directory)
     (not (null result))))
+
+(defun test-cpy-skeleton-directory ()
+  (let* ((sk-dir "/tmp/.skeleton/")
+         (sk-file-1 (conc sk-dir "sk-file-1.lisp"))
+         (sk-child-dir (conc sk-dir "skeleton-child-dir/"))
+         (sk-file-2 (conc sk-child-dir "README"))
+         (sk-file-3 (conc sk-dir "sk-file-3.lisp"))
+         (destination-path "/tmp/new-project-test/")
+         (result nil))
+    (ensure-directories-exist sk-dir)
+    (ensure-directories-exist sk-child-dir)
+    (skeleton-creator::write-string-in-file sk-file-1 "Here?")
+    (skeleton-creator::write-string-in-file sk-file-2 "New project")
+    (skeleton-creator::write-string-in-file sk-file-3 "Or here?")
+    (skeleton-creator::copy-directory-recursive sk-dir destination-path :overwrite t)
+    (setf result (and (cl-fad:directory-exists-p destination-path)
+                      (cl-fad:file-exists-p (conc destination-path "sk-file-1.lisp"))
+                      (cl-fad:file-exists-p (conc destination-path "sk-file-3.lisp"))
+                      (cl-fad:directory-exists-p (conc destination-path "skeleton-child-dir/"))
+                      (cl-fad:file-exists-p (conc destination-path "skeleton-child-dir/README"))
+                      t))
+    (delete-project-directory sk-dir)
+    (delete-project-directory destination-path)
+    result))
+
+
+
+

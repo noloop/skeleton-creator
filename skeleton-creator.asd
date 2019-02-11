@@ -12,8 +12,9 @@
   :depends-on (:conf :cl-fad :cl-ppcre)
   :components ((:module "src"
                 :components
-                ((:file "package")
-                 (:file "skeleton-creator" :depends-on ("package")))))
+                ((:file "copy-directory")
+                 (:file "package")
+                 (:file "skeleton-creator" :depends-on ("package" "copy-directory")))))
   :long-description
   #.(uiop:read-file-string
      (uiop:subpathname *load-pathname* "README.md"))
@@ -27,5 +28,7 @@
   :depends-on (:skeleton-creator)
   :components ((:module "test"
                 :components
-                ((:file "skeleton-creator-test"))))
-  :perform (test-op (op system) (funcall (read-from-string "skeleton-creator-test::run"))))
+                ((:file "copy-directory-test")
+                 (:file "skeleton-creator-test"))))
+  :perform (test-op (op system) (progn (funcall (read-from-string "copy-directory-test::run"))
+                                       (funcall (read-from-string "skeleton-creator-test::run")))))

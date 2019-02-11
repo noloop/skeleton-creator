@@ -1,5 +1,4 @@
 (in-package #:noloop.skeleton-creator)
-;;(init-conf "/home/noloop/lisp/portacle/projects/test-git/" "skeleton-creator.conf")
 
 (defun init-skeleton-creator (conf-directory)
   (reverse (pairlis (list :conf
@@ -19,17 +18,17 @@
 (defun get-field (skeleton-creator field)
   (cdr (assoc field skeleton-creator)))
 
-(defun set-configure-directory (skeleton-creator new-directory)
+(defun set-conf-directory (skeleton-creator new-directory)
   (set-conf-directory (get-field skeleton-creator :conf) new-directory))
 
-(defun get-configure-directory (skeleton-creator new-directory)
+(defun get-conf-directory (skeleton-creator)
   (get-conf-directory (get-field skeleton-creator :conf)))
 
-(defun configure-skeleton-creator (skeleton-creator)
+(defun conf-skeleton-creator (skeleton-creator)
   (format t "SKELETON CREATOR CONFIGURATION~%")
   (format t "I will ask you some questions to create/modify 
 the skeleton-creator configuration file, you can answer them, 
-or leave empty to keep the previous configuration or default configuration.~%")
+or leave empty to keep the previous configuration or default/actual configuration.~%")
   (is-ok? (replace-conf (get-field skeleton-creator :conf))))
 
 (defun is-ok? (fn)
@@ -38,7 +37,7 @@ or leave empty to keep the previous configuration or default configuration.~%")
       fn
       nil))
 
-(defun create-new-project (skeleton-creator destination-directory name description)
+(defun create-project (skeleton-creator destination-directory name description)
   (copy-skeleton-directory destination-directory)
   (set-field skeleton-creator :project-destination-directory destination-directory)
   (set-field skeleton-creator :project-name name)
@@ -46,11 +45,20 @@ or leave empty to keep the previous configuration or default configuration.~%")
   (replace-markings skeleton-creator destination-directory))
 
 (defun copy-skeleton-directory (destination-directory)
-  ;;também copiar no windows e mac(comandos)
-  (uiop:run-program '("cp -r" (concatenate 'string
-                               (concatenate 'string (get-conf-directory conf) "skeleton/*")
-                               destination-directory))))
- 
+    (copy-directory:copy-directory (concatenate 'string (get-conf-directory conf) "skeleton/")
+                                   destination-director
+                                   :overwrite t))
+
+#|
+(defun copy-skeleton-directory (destination-directory)
+  (let ((copyCommand))
+    #+windows (setf copyCommand "copy")
+    #+linux (setf copyCommand "cp -r")
+    (uiop:run-program '(copyCommand (concatenate 'string
+                                 (concatenate 'string (get-conf-directory conf) "skeleton/*")
+                                     destination-directory #+windows "/E")))))
+|#
+
 (defun replace-markings (skeleton-creator destination-directory)
   "1 - Replace the file names with the markings values.
 2 - Replace the strings within the contents of the files with markings values.
@@ -130,8 +138,9 @@ Markings are PROJECT-NAME and DESCRIPTION and all elements of the skeleton.conf 
 
 (defun walk-destination-directory (destination-directory fn &optional (ignores '()))
   (cl-fad:walk-directory destination-directory fn
-                  :directories :BREADTH-FIRST
-                  :test (not-match-list-ignore destination-directory ignores)))
+                         :directories :BREADTH-FIRST
+                         :follow-symlinks nil
+                         :test (not-match-list-ignore destination-directory ignores)))
 
 (defun not-match-list-ignore (destination-directory ignores)
   "Returns a lambda that checks whether an element(el) merged to a destination-directory is equal to some element of the ignore list."
@@ -146,7 +155,7 @@ Markings are PROJECT-NAME and DESCRIPTION and all elements of the skeleton.conf 
           (setf result t)))
     result))
 
-(defun delete-project-directory (project-directory)
+(defun delete-project (project-directory)
   (cl-fad:delete-directory-and-files project-directory))
 
 ;;;(defun license-under-unlicense())
