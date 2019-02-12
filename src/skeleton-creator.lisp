@@ -7,9 +7,9 @@
                           :project-description
                           :replace-ignore)
                     (list (init-conf conf-directory "skeleton-creator.conf")
-                          "PROJECT-NAME"
-                          "DESCRIPTION"
                           "/tmp/"
+                          "PROJECT-NAME"
+                          "PROJECT-DESCRIPTION"
                           '(".git/")))))
 
 (defun set-field (skeleton-creator field new-value)
@@ -18,10 +18,10 @@
 (defun get-field (skeleton-creator field)
   (cdr (assoc field skeleton-creator)))
 
-(defun set-conf-directory (skeleton-creator new-directory)
+(defun set-conf-dir (skeleton-creator new-directory)
   (set-conf-directory (get-field skeleton-creator :conf) new-directory))
 
-(defun get-conf-directory (skeleton-creator)
+(defun get-conf-dir (skeleton-creator)
   (get-conf-directory (get-field skeleton-creator :conf)))
 
 (defun conf-skeleton-creator (skeleton-creator)
@@ -38,36 +38,27 @@ or leave empty to keep the previous configuration or default/actual configuratio
       nil))
 
 (defun create-project (skeleton-creator destination-directory name description)
-  (copy-skeleton-directory destination-directory)
+  (copy-skeleton-directory skeleton-creator destination-directory)
   (set-field skeleton-creator :project-destination-directory destination-directory)
   (set-field skeleton-creator :project-name name)
   (set-field skeleton-creator :project-description description)
   (replace-markings skeleton-creator destination-directory))
 
-(defun copy-skeleton-directory (destination-directory)
-    (copy-directory:copy-directory (concatenate 'string (get-conf-directory conf) "skeleton/")
-                                   destination-director
-                                   :overwrite t))
-
-#|
-(defun copy-skeleton-directory (destination-directory)
-  (let ((copyCommand))
-    #+windows (setf copyCommand "copy")
-    #+linux (setf copyCommand "cp -r")
-    (uiop:run-program '(copyCommand (concatenate 'string
-                                 (concatenate 'string (get-conf-directory conf) "skeleton/*")
-                                     destination-directory #+windows "/E")))))
-|#
+(defun copy-skeleton-directory (skeleton-creator destination-directory)
+  (copy-directory:copy-directory
+   (concatenate 'string (get-conf-dir skeleton-creator) "skeleton/")
+   destination-directory
+   :overwrite t))
 
 (defun replace-markings (skeleton-creator destination-directory)
   "1 - Replace the file names with the markings values.
 2 - Replace the strings within the contents of the files with markings values.
-Markings are PROJECT-NAME and DESCRIPTION and all elements of the skeleton.conf configuration file."
+Markings are PROJECT-NAME and PROJECT-DESCRIPTION and all elements of the skeleton.conf configuration file."
   (let ((ignores (get-field skeleton-creator :replace-ignore))
         (hash-markings (alexandria:copy-hash-table
                         (get-conf-hash (get-field skeleton-creator :conf)))))
     (setf (gethash :PROJECT-NAME hash-markings) (get-field skeleton-creator :project-name))
-    (setf (gethash :DESCRIPTION hash-markings) (get-field skeleton-creator :project-description))
+    (setf (gethash :PROJECT-DESCRIPTION hash-markings) (get-field skeleton-creator :project-description))
     (replace-markings-in-file-names destination-directory hash-markings ignores)
     (replace-markings-in-file destination-directory hash-markings ignores)))
 

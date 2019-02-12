@@ -4,7 +4,8 @@
   (:nicknames #:skeleton-creator-test)
   (:import-from #:skeleton-creator
                 #:replace-markings-in-file-names
-                #:delete-project-directory))
+                #:replace-markings-in-file
+                #:delete-project))
 (in-package #:noloop.skeleton-creator-test)
 
 ;; Simple Test Runner
@@ -109,7 +110,7 @@
      destination-directory
      #'(lambda (el) (push el paths-collected))
      ignores)
-    (delete-project-directory destination-directory)
+    (delete-project destination-directory)
     (and (= 2 (length paths-collected))
          (string=
           (conc destination-directory "PROJECT-NAME.lisp")
@@ -155,7 +156,7 @@
     (setf result (and
                   (cl-fad:file-exists-p (concatenate 'string path-directory "new-p-test.lisp"))
                   (cl-fad:file-exists-p (concatenate 'string path-child-directory "new-p.lisp"))))
-    (delete-project-directory path-directory)
+    (delete-project path-directory)
     (not (null result))))
 
 (defun test-replace-markings-in-file-names-with-ignores ()
@@ -173,7 +174,7 @@
     (setf (gethash :PROJECT-NAME hash-markings) "new-p")
     (replace-markings-in-file-names path-directory hash-markings ignores)
     (setf result (and (cl-fad:file-exists-p (concatenate 'string path-directory "new-p.lisp"))))
-    (delete-project-directory path-directory)
+    (delete-project path-directory)
     (not (null result))))
 
 (defun test-replace-markings-in-file ()
@@ -189,10 +190,10 @@
     (skeleton-creator::write-string-in-file path-file-2 "PROJECT-NAME by AUTHOR")
     (setf (gethash :PROJECT-NAME hash-markings) "new-project")
     (setf (gethash :AUTHOR hash-markings) "your")
-    (skeleton-creator::replace-markings-in-file path-directory hash-markings)
+    (replace-markings-in-file path-directory hash-markings)
     (setf result (and (string= "new-project" (skeleton-creator::get-string-from-file path-file-1))
                       (string= "new-project by your" (skeleton-creator::get-string-from-file path-file-2))))
-    (delete-project-directory path-directory)
+    (delete-project path-directory)
     (not (null result))))
 
 (defun test-replace-markings-in-file-with-ignores ()
@@ -212,7 +213,7 @@
     (skeleton-creator::replace-markings-in-file path-directory hash-markings ignores)
     (setf result (and (string= "new-project" (skeleton-creator::get-string-from-file path-file-1))
                       (string= "PROJECT-NAME by AUTHOR" (skeleton-creator::get-string-from-file path-file-2))))
-    (delete-project-directory path-directory)
+    (delete-project path-directory)
     (not (null result))))
 
 (defun test-replace-markings ()
@@ -241,33 +242,6 @@
           (cl-fad:file-exists-p expected-path-file-2)
           (string= "new-project version 0.1.0" (skeleton-creator::get-string-from-file expected-path-file-1))
           (string= "new-project by your" (skeleton-creator::get-string-from-file expected-path-file-2))))
-    (delete-project-directory path-directory)
+    (delete-project path-directory)
     (not (null result))))
-
-(defun test-cpy-skeleton-directory ()
-  (let* ((sk-dir "/tmp/.skeleton/")
-         (sk-file-1 (conc sk-dir "sk-file-1.lisp"))
-         (sk-child-dir (conc sk-dir "skeleton-child-dir/"))
-         (sk-file-2 (conc sk-child-dir "README"))
-         (sk-file-3 (conc sk-dir "sk-file-3.lisp"))
-         (destination-path "/tmp/new-project-test/")
-         (result nil))
-    (ensure-directories-exist sk-dir)
-    (ensure-directories-exist sk-child-dir)
-    (skeleton-creator::write-string-in-file sk-file-1 "Here?")
-    (skeleton-creator::write-string-in-file sk-file-2 "New project")
-    (skeleton-creator::write-string-in-file sk-file-3 "Or here?")
-    (skeleton-creator::copy-directory-recursive sk-dir destination-path :overwrite t)
-    (setf result (and (cl-fad:directory-exists-p destination-path)
-                      (cl-fad:file-exists-p (conc destination-path "sk-file-1.lisp"))
-                      (cl-fad:file-exists-p (conc destination-path "sk-file-3.lisp"))
-                      (cl-fad:directory-exists-p (conc destination-path "skeleton-child-dir/"))
-                      (cl-fad:file-exists-p (conc destination-path "skeleton-child-dir/README"))
-                      t))
-    (delete-project-directory sk-dir)
-    (delete-project-directory destination-path)
-    result))
-
-
-
 

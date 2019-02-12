@@ -14,7 +14,8 @@
                 :components
                 ((:file "copy-directory")
                  (:file "package")
-                 (:file "skeleton-creator" :depends-on ("package" "copy-directory")))))
+                 (:file "skeleton-creator" :depends-on ("package" "copy-directory"))
+                 (:file "ui-skeleton-creator" :depends-on ("package" "copy-directory" "skeleton-creator")))))
   :long-description
   #.(uiop:read-file-string
      (uiop:subpathname *load-pathname* "README.md"))
@@ -29,6 +30,8 @@
   :components ((:module "test"
                 :components
                 ((:file "copy-directory-test")
-                 (:file "skeleton-creator-test"))))
+                 (:file "skeleton-creator-test")
+                 (:file "ui-skeleton-creator-test"))))
   :perform (test-op (op system) (progn (funcall (read-from-string "copy-directory-test::run"))
-                                       (funcall (read-from-string "skeleton-creator-test::run")))))
+                                       (funcall (read-from-string "skeleton-creator-test::run"))
+                                       (funcall (read-from-string "ui-skeleton-creator-test::run")))))
