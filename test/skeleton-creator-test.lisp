@@ -3,6 +3,19 @@
   (:use #:common-lisp)
   (:nicknames #:skeleton-creator-test)
   (:import-from #:skeleton-creator
+                #:string-replace-all
+                #:conc
+                #:write-string-in-file
+                #:get-string-from-file
+                #:pathname-is-file
+                #:not-match-list-ignore
+                #:walk-destination-directory
+                #:merge-path-with-new-file-name
+                #:string-match-markings
+                #:set-field
+                #:get-field
+                #:init-skeleton-creator
+                #:replace-markings
                 #:replace-markings-in-file-names
                 #:replace-markings-in-file
                 #:delete-project))
@@ -34,25 +47,20 @@
   (format t "Test result: ~a~%~%"
           (every #'(lambda (el) (equal t el)) results)))
 
-;; Utils
-(defmacro conc (&rest string-args)
-  "Synthetic sugar for concatenate strings."
-  `(concatenate 'string ,@string-args))
-
 (defun test-string-replace-all ()
   (let ((stg "old string")
         (expected-stg "expected string")
         (old-stg "old")
         (new-stg "expected"))
     (and (string= expected-stg
-                  (skeleton-creator::string-replace-all stg old-stg new-stg)))))
+                  (string-replace-all stg old-stg new-stg)))))
 
 (defun test-write-string-in-file ()
   (let ((file-name "/tmp/write-string-in-file.tmp")
         (expected-stg "I exists?")
         (actual-stg ""))
-    (skeleton-creator::write-string-in-file file-name "I exists?")
-    (setf actual-stg (skeleton-creator::get-string-from-file file-name))
+    (write-string-in-file file-name "I exists?")
+    (setf actual-stg (get-string-from-file file-name))
     (delete-file file-name)
     (and (string= expected-stg actual-stg))))
 
@@ -62,11 +70,11 @@
          (path-directory t)
          (path-file-not-exist t)
          (path-directory-not-exist t))
-    (skeleton-creator::write-string-in-file file-name "I'm here?")
-    (setf path-file (skeleton-creator::pathname-is-file "/tmp/pathname-is-file.tmp"))
-    (setf path-directory (skeleton-creator::pathname-is-file "/tmp/"))
-    (setf path-file-not-exist (skeleton-creator::pathname-is-file "/tmp/pathname-is-file-not-exist.tmp"))
-    (setf path-directory-not-exist (skeleton-creator::pathname-is-file "/tmp/pathname-is-file-not-exist/"))
+    (write-string-in-file file-name "I'm here?")
+    (setf path-file (pathname-is-file "/tmp/pathname-is-file.tmp"))
+    (setf path-directory (pathname-is-file "/tmp/"))
+    (setf path-file-not-exist (pathname-is-file "/tmp/pathname-is-file-not-exist.tmp"))
+    (setf path-directory-not-exist (pathname-is-file "/tmp/pathname-is-file-not-exist/"))
     (delete-file file-name)
     (and (not (null path-file))
          (null path-directory)
@@ -80,7 +88,7 @@
          (path-file-1 (conc destination-directory "file.lisp"))
          (path-child-file-1 (conc destination-directory "child-directory/child-file.lisp"))
          (path-file-2 (conc destination-directory "file-without-type"))
-         (not-match-fn (skeleton-creator::not-match-list-ignore
+         (not-match-fn (not-match-list-ignore
                         destination-directory
                         ignores))
          (result nil))
@@ -95,7 +103,7 @@
 (defun test-walk-destination-directory ()
   (let* ((destination-directory "/tmp/walk-destination-directory/")
          (ignores '(".git/" "child-dir/"))
-        (not-match-fn (skeleton-creator::not-match-list-ignore
+        (not-match-fn (not-match-list-ignore
                        destination-directory
                        ignores))
          (path-file-1 (concatenate 'string destination-directory "PROJECT-NAME.lisp"))
@@ -104,9 +112,9 @@
         (paths-collected '()))
     (ensure-directories-exist destination-directory)
     (ensure-directories-exist path-child-directory)
-    (skeleton-creator::write-string-in-file path-file-1 "I'm here?")
-    (skeleton-creator::write-string-in-file path-file-2 "I...?")
-    (skeleton-creator::walk-destination-directory
+    (write-string-in-file path-file-1 "I'm here?")
+    (write-string-in-file path-file-2 "I...?")
+    (walk-destination-directory
      destination-directory
      #'(lambda (el) (push el paths-collected))
      ignores)
@@ -122,7 +130,7 @@
 (defun test-merge-path-with-new-file-name ()
   (let* ((path "/tmp/rename-path-file/file.lisp")
         (new-file-name "new-file")
-         (result (skeleton-creator::merge-path-with-new-file-name
+         (result (merge-path-with-new-file-name
                  path
                  new-file-name)))
     (not (null (string= "/tmp/rename-path-file/new-file.lisp" (namestring result))))))
@@ -130,7 +138,7 @@
 (defun test-merge-path-with-new-file-name-with-path-directory ()
   (let* ((path "/tmp/rename-path-file/")
          (new-file-name "new-file")
-         (result (skeleton-creator::merge-path-with-new-file-name
+         (result (merge-path-with-new-file-name
                   path
                   new-file-name)))
     (not (null (string= "/tmp/rename-path-file/new-file" (namestring result))))))
@@ -138,7 +146,7 @@
 (defun test-string-match-markings ()
   (let ((hash-markings (make-hash-table)))
     (setf (gethash :PROJECT-NAME hash-markings) "new-p")
-    (and (not (null (skeleton-creator::string-match-markings "PROJECT-NAME" hash-markings))))))
+    (and (not (null (string-match-markings "PROJECT-NAME" hash-markings))))))
 
 (defun test-replace-markings-in-file-names ()
   (let* ((path-directory "/tmp/replace-markings-in-file-names/")
@@ -149,8 +157,8 @@
          (result nil))
     (ensure-directories-exist path-directory)
     (ensure-directories-exist path-child-directory)
-    (skeleton-creator::write-string-in-file path-file-1 "I'm here?")
-    (skeleton-creator::write-string-in-file path-file-2 "I don't know.")
+    (write-string-in-file path-file-1 "I'm here?")
+    (write-string-in-file path-file-2 "I don't know.")
     (setf (gethash :PROJECT-NAME hash-markings) "new-p")
     (replace-markings-in-file-names path-directory hash-markings)
     (setf result (and
@@ -169,8 +177,8 @@
          (result nil))
     (ensure-directories-exist path-directory)
     (ensure-directories-exist path-child-directory)
-    (skeleton-creator::write-string-in-file path-file-1 "I'm here?")
-    (skeleton-creator::write-string-in-file path-file-2 "I don't know.")
+    (write-string-in-file path-file-1 "I'm here?")
+    (write-string-in-file path-file-2 "I don't know.")
     (setf (gethash :PROJECT-NAME hash-markings) "new-p")
     (replace-markings-in-file-names path-directory hash-markings ignores)
     (setf result (and (cl-fad:file-exists-p (concatenate 'string path-directory "new-p.lisp"))))
@@ -186,13 +194,13 @@
         (result nil))
     (ensure-directories-exist path-directory)
     (ensure-directories-exist path-child-directory)
-    (skeleton-creator::write-string-in-file path-file-1 "PROJECT-NAME")
-    (skeleton-creator::write-string-in-file path-file-2 "PROJECT-NAME by AUTHOR")
+    (write-string-in-file path-file-1 "PROJECT-NAME")
+    (write-string-in-file path-file-2 "PROJECT-NAME by AUTHOR")
     (setf (gethash :PROJECT-NAME hash-markings) "new-project")
     (setf (gethash :AUTHOR hash-markings) "your")
     (replace-markings-in-file path-directory hash-markings)
-    (setf result (and (string= "new-project" (skeleton-creator::get-string-from-file path-file-1))
-                      (string= "new-project by your" (skeleton-creator::get-string-from-file path-file-2))))
+    (setf result (and (string= "new-project" (get-string-from-file path-file-1))
+                      (string= "new-project by your" (get-string-from-file path-file-2))))
     (delete-project path-directory)
     (not (null result))))
 
@@ -206,13 +214,13 @@
          (result nil))
     (ensure-directories-exist path-directory)
     (ensure-directories-exist path-child-directory)
-    (skeleton-creator::write-string-in-file path-file-1 "PROJECT-NAME")
-    (skeleton-creator::write-string-in-file path-file-2 "PROJECT-NAME by AUTHOR")
+    (write-string-in-file path-file-1 "PROJECT-NAME")
+    (write-string-in-file path-file-2 "PROJECT-NAME by AUTHOR")
     (setf (gethash :PROJECT-NAME hash-markings) "new-project")
     (setf (gethash :AUTHOR hash-markings) "your")
-    (skeleton-creator::replace-markings-in-file path-directory hash-markings ignores)
-    (setf result (and (string= "new-project" (skeleton-creator::get-string-from-file path-file-1))
-                      (string= "PROJECT-NAME by AUTHOR" (skeleton-creator::get-string-from-file path-file-2))))
+    (replace-markings-in-file path-directory hash-markings ignores)
+    (setf result (and (string= "new-project" (get-string-from-file path-file-1))
+                      (string= "PROJECT-NAME by AUTHOR" (get-string-from-file path-file-2))))
     (delete-project path-directory)
     (not (null result))))
 
@@ -231,17 +239,17 @@
     (ensure-directories-exist path-directory)
     (ensure-directories-exist path-conf-directory)
     (ensure-directories-exist path-child-directory)
-    (skeleton-creator::write-string-in-file path-file-conf "(:AUTHOR \"your\" :VERSION \"0.1.0\")")
-    (setf sk (skeleton-creator::init-skeleton-creator "/tmp/replace-markings/.conf/"))
-    (skeleton-creator::set-field sk :PROJECT-NAME "new-project")
-    (skeleton-creator::set-field sk :REPLACE-IGNORE ignores)
-    (skeleton-creator::write-string-in-file path-file-1 "PROJECT-NAME version VERSION")
-    (skeleton-creator::write-string-in-file path-file-2 "PROJECT-NAME by AUTHOR")
-    (skeleton-creator::replace-markings sk path-directory)
+    (write-string-in-file path-file-conf "(:AUTHOR \"your\" :VERSION \"0.1.0\")")
+    (setf sk (init-skeleton-creator "/tmp/replace-markings/.conf/"))
+    (set-field sk :PROJECT-NAME "new-project")
+    (set-field sk :REPLACE-IGNORE ignores)
+    (write-string-in-file path-file-1 "PROJECT-NAME version VERSION")
+    (write-string-in-file path-file-2 "PROJECT-NAME by AUTHOR")
+    (replace-markings sk path-directory)
     (setf result (and (cl-fad:file-exists-p expected-path-file-1)
           (cl-fad:file-exists-p expected-path-file-2)
-          (string= "new-project version 0.1.0" (skeleton-creator::get-string-from-file expected-path-file-1))
-          (string= "new-project by your" (skeleton-creator::get-string-from-file expected-path-file-2))))
+          (string= "new-project version 0.1.0" (get-string-from-file expected-path-file-1))
+          (string= "new-project by your" (get-string-from-file expected-path-file-2))))
     (delete-project path-directory)
     (not (null result))))
 

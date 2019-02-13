@@ -2,7 +2,10 @@
 (defpackage #:noloop.copy-directory-test
   (:use #:common-lisp)
   (:nicknames #:copy-directory-test)
-  (:import-from #:copy-directory
+  (:import-from #:skeleton-creator
+                #:pathname-subtract
+                #:conc
+                #:write-string-in-file
                 #:copy-directory))
 (in-package #:noloop.copy-directory-test)
 
@@ -21,23 +24,10 @@
   (format t "Test result: ~a~%~%"
           (every #'(lambda (el) (equal t el)) results)))
 
-;; Utils
-(defmacro conc (&rest string-args)
-  "Synthetic sugar for concatenate strings."
-  `(concatenate 'string ,@string-args))
-
-(defun write-string-in-file (file-name stg)
-  (with-open-file
-      (stream file-name
-              :direction :output
-              :if-exists :supersede
-              :if-does-not-exist :create)
-    (format stream stg)))
-
 (defun test-pathname-subtract ()
   (let* ((path-1 "/home/you/lisp/projects/")
          (path-2 "/home/you/lisp/projects/child-dir/other-dir/")
-         (result (copy-directory::pathname-subtract path-1 path-2)))
+         (result (pathname-subtract path-1 path-2)))
     (and (cl-fad:pathname-equal #P"child-dir/other-dir/" result))))
 
 (defun test-copy-directory ()

@@ -2,7 +2,10 @@
 (defpackage #:noloop.ui-skeleton-creator-test
   (:use #:common-lisp)
   (:nicknames #:ui-skeleton-creator-test)
-  (:import-from #:ui-skeleton-creator
+  (:import-from #:skeleton-creator
+                #:conc
+                #:write-string-in-file
+                #:get-string-from-file
                 #:set-configure-directory
                 #:get-configure-directory
                 #:configure-skeleton-creator
@@ -23,25 +26,6 @@
 (defun suite (&rest results)
   (format t "Test result: ~a~%~%"
           (every #'(lambda (el) (equal t el)) results)))
-
-;; Utils
-(defmacro conc (&rest string-args)
-  "Synthetic sugar for concatenate strings."
-  `(concatenate 'string ,@string-args))
-
-(defun write-string-in-file (file-name stg)
-  (with-open-file
-      (stream file-name
-              :direction :output
-              :if-exists :supersede
-              :if-does-not-exist :create)
-    (format stream stg)))
-
-(defun get-string-from-file (file-name)
-  (with-open-file (stream file-name)
-    (let ((contents (make-string (file-length stream))))
-      (read-sequence contents stream)
-      contents)))
 
 (defun test-create-new-project ()
   (let* ((conf-dir "/tmp/.sk-conf/")

@@ -1,4 +1,4 @@
-(in-package #:noloop.ui-skeleton-creator)
+(in-package #:noloop.skeleton-creator)
 
 (let ((sk (init-skeleton-creator "~/.config/skeleton-creator-conf/")))
   

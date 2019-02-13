@@ -12,10 +12,11 @@
   :depends-on (:conf :cl-fad :cl-ppcre)
   :components ((:module "src"
                 :components
-                ((:file "copy-directory")
-                 (:file "package")
-                 (:file "skeleton-creator" :depends-on ("package" "copy-directory"))
-                 (:file "ui-skeleton-creator" :depends-on ("package" "copy-directory" "skeleton-creator")))))
+                ((:file "package")
+                 (:file "utils" :depends-on ("package"))
+                 (:file "copy-directory" :depends-on ("package"))
+                 (:file "skeleton-creator" :depends-on ("package" "utils" "copy-directory"))
+                 (:file "ui-skeleton-creator" :depends-on ("skeleton-creator")))))
   :long-description
   #.(uiop:read-file-string
      (uiop:subpathname *load-pathname* "README.md"))

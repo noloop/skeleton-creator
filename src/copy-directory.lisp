@@ -1,9 +1,4 @@
-(in-package #:cl-user)
-(defpackage #:noloop.copy-directory
-  (:use #:common-lisp)
-  (:nicknames #:copy-directory)
-  (:export #:copy-directory))
-(in-package #:noloop.copy-directory)
+(in-package #:noloop.skeleton-creator)
 
 (defun copy-directory (origin destination &key (overwrite nil))
   (let ((list-dir (cl-fad:list-directory origin :follow-symlinks nil)))

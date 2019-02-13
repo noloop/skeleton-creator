@@ -31,12 +31,6 @@ the skeleton-creator configuration file, you can answer them,
 or leave empty to keep the previous configuration or default/actual configuration.~%")
   (is-ok? (replace-conf (get-field skeleton-creator :conf))))
 
-(defun is-ok? (fn)
-  (format t "IS OK?(yes/no)~%")
-  (if (string-equal "yes" (read))
-      fn
-      nil))
-
 (defun create-project (skeleton-creator destination-directory name description)
   (copy-skeleton-directory skeleton-creator destination-directory)
   (set-field skeleton-creator :project-destination-directory destination-directory)
@@ -45,7 +39,7 @@ or leave empty to keep the previous configuration or default/actual configuratio
   (replace-markings skeleton-creator destination-directory))
 
 (defun copy-skeleton-directory (skeleton-creator destination-directory)
-  (copy-directory:copy-directory
+  (copy-directory
    (concatenate 'string (get-conf-dir skeleton-creator) "skeleton/")
    destination-directory
    :overwrite t))
@@ -107,29 +101,6 @@ Markings are PROJECT-NAME and PROJECT-DESCRIPTION and all elements of the skelet
              hash-markings)
     new-stg))
 
-(defun pathname-is-file (path)
-  (and (not (cl-fad:directory-exists-p path))
-       (cl-fad:file-exists-p path)))
-
-(defun get-string-from-file (file-name)
-  (with-open-file (stream file-name)
-    (let ((contents (make-string (file-length stream))))
-      (read-sequence contents stream)
-      contents)))
-
-(defun write-string-in-file (file-name stg)
-  (with-open-file
-      (stream file-name
-              :direction :output
-              :if-exists :supersede
-              :if-does-not-exist :create)
-    (format stream stg)))
-
-(defun string-replace-all (stg old new)
-  (let* ((cl-ppcre:*allow-quoting* t)
-         (old (concatenate 'string "\\Q" old)))
-    (cl-ppcre:regex-replace-all old stg new)))
-
 (defun walk-destination-directory (destination-directory fn &optional (ignores '()))
   (cl-fad:walk-directory destination-directory fn
                          :directories :BREADTH-FIRST
@@ -154,7 +125,8 @@ Markings are PROJECT-NAME and PROJECT-DESCRIPTION and all elements of the skelet
 
 ;;;(defun license-under-unlicense())
 ;;;(defun license-under-cc0())
-;;;(defun license-under-gplv3()) buscar no diretorio licenses a license configurada no arquivo conf
+;;;(defun license-under-gplv3())
+;;;buscar no diretorio licenses a license configurada no arquivo conf
 ;;;criar arquivo LICENSE com a license escolhida
 ;;;substituir as marcacoes na string de aviso para a licensa que deve estar em cada arquivo
 ;;;acrescentar no inicio de todos os arquivos #| aviso license|# com execeção dos arquivos LICENSE(s)
