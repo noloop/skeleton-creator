@@ -1,6 +1,7 @@
 (in-package #:cl-user)
 (defpackage #:noloop.copy-directory-test
-  (:use #:common-lisp)
+  (:use #:common-lisp
+        #:simplet)
   (:nicknames #:copy-directory-test)
   (:import-from #:skeleton-creator
                 #:pathname-subtract
@@ -8,21 +9,6 @@
                 #:write-string-in-file
                 #:copy-directory))
 (in-package #:noloop.copy-directory-test)
-
-;; Simple Test Runner
-(defun run ()
-  (suite
-   (test "Test pathname-subtract" #'test-pathname-subtract)
-   (test "Test copy-directory-recursive" #'test-copy-directory)))
-
-(defun test (stg test-fn)
-  (let ((result (funcall test-fn)))
-    (format t "~a: ~a~%" stg result)
-    result))
-
-(defun suite (&rest results)
-  (format t "Test result: ~a~%~%"
-          (every #'(lambda (el) (equal t el)) results)))
 
 (defun test-pathname-subtract ()
   (let* ((path-1 "/home/you/lisp/projects/")
@@ -53,3 +39,7 @@
     (cl-fad:delete-directory-and-files sk-dir)
     (cl-fad:delete-directory-and-files destination-path)
     result))
+
+(suite "Suite copy-directory-test"
+       (test "Test pathname-subtract" #'test-pathname-subtract)
+       (test "Test copy-directory-recursive" #'test-copy-directory))

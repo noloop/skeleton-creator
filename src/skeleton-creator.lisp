@@ -24,6 +24,7 @@
 (defun get-conf-dir (skeleton-creator)
   (get-conf-directory (get-field skeleton-creator :conf)))
 
+;;; !!!!!!!lembrar de copiar diretorio do proprio repositorio chamado default-conf-directory dando opcao de copiar ou o usuario criar o seu
 (defun conf-skeleton-creator (skeleton-creator)
   (format t "SKELETON CREATOR CONFIGURATION~%")
   (format t "I will ask you some questions to create/modify 
@@ -32,11 +33,15 @@ or leave empty to keep the previous configuration or default/actual configuratio
   (is-ok? (replace-conf (get-field skeleton-creator :conf))))
 
 (defun create-project (skeleton-creator destination-directory name description)
-  (copy-skeleton-directory skeleton-creator destination-directory)
-  (set-field skeleton-creator :project-destination-directory destination-directory)
-  (set-field skeleton-creator :project-name name)
-  (set-field skeleton-creator :project-description description)
-  (replace-markings skeleton-creator destination-directory))
+  (let ((path-project (cl-fad:merge-pathnames-as-directory
+                       destination-directory
+                       (concatenate 'string name "/"))))
+    (ensure-directories-exist path-project)
+    (copy-skeleton-directory skeleton-creator path-project)
+    (set-field skeleton-creator :project-destination-directory path-project)
+    (set-field skeleton-creator :project-name name)
+    (set-field skeleton-creator :project-description description)
+    (replace-markings skeleton-creator path-project)))
 
 (defun copy-skeleton-directory (skeleton-creator destination-directory)
   (copy-directory
@@ -115,20 +120,11 @@ Markings are PROJECT-NAME and PROJECT-DESCRIPTION and all elements of the skelet
 (defun dolist-ignores (path destination ignores)
   (let ((result t))
     (dolist (i ignores)
-      (if (cl-fad:pathname-equal path (concatenate 'string destination i))
+      (if (cl-fad:pathname-equal path (concatenate 'string (namestring destination) i))
           (progn (setf result nil) (return))
           (setf result t)))
     result))
 
 (defun delete-project (project-directory)
   (cl-fad:delete-directory-and-files project-directory))
-
-;;;(defun license-under-unlicense())
-;;;(defun license-under-cc0())
-;;;(defun license-under-gplv3())
-;;;buscar no diretorio licenses a license configurada no arquivo conf
-;;;criar arquivo LICENSE com a license escolhida
-;;;substituir as marcacoes na string de aviso para a licensa que deve estar em cada arquivo
-;;;acrescentar no inicio de todos os arquivos #| aviso license|# com execeção dos arquivos LICENSE(s)
-;;;acrescentar no fim dos arquivos README.md(s) um topico "### LICENSE" copiando o aviso de licensa para ele
 

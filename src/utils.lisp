@@ -26,7 +26,7 @@
               :direction :output
               :if-exists :supersede
               :if-does-not-exist :create)
-    (format stream stg)))
+    (write-string stg stream)))
 
 (defun string-replace-all (stg old new)
   (let* ((cl-ppcre:*allow-quoting* t)

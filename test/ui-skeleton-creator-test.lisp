@@ -1,6 +1,7 @@
 (in-package #:cl-user)
 (defpackage #:noloop.ui-skeleton-creator-test
-  (:use #:common-lisp)
+  (:use #:common-lisp
+        #:simplet)
   (:nicknames #:ui-skeleton-creator-test)
   (:import-from #:skeleton-creator
                 #:conc
@@ -13,20 +14,6 @@
                 #:delete-project-directory))
 (in-package #:ui-skeleton-creator-test)
 
-;; Simple Test Runner
-(defun run ()
-  (suite
-   (test "Test create-new-project" #'test-create-new-project)))
-
-(defun test (stg test-fn)
-  (let ((result (funcall test-fn)))
-    (format t "~a: ~a~%" stg result)
-    result))
-
-(defun suite (&rest results)
-  (format t "Test result: ~a~%~%"
-          (every #'(lambda (el) (equal t el)) results)))
-
 (defun test-create-new-project ()
   (let* ((conf-dir "/tmp/.sk-conf/")
          (conf-file "/tmp/.sk-conf/skeleton-creator.conf")
@@ -35,7 +22,7 @@
          (sk-file-2 (conc sk-dir "README"))
          (sk-child-dir (conc sk-dir "skeleton-child-dir/"))
          (sk-file-3 (conc sk-child-dir "PROJECT-NAME.lisp"))
-         (destination-path "/tmp/new-project-test/")
+         (destination-path "/tmp/")
          (result nil))
     (ensure-directories-exist conf-dir)
     (ensure-directories-exist sk-dir)
@@ -45,17 +32,19 @@
     (write-string-in-file sk-file-2 "PROJECT-DESCRIPTION")
     (write-string-in-file sk-file-3 "My PROJECT-NAME by AUTHOR.")
     (set-configure-directory "/tmp/.sk-conf/")
-    (create-new-project destination-path "new-project" "The project description.")
-    (setf result (and (cl-fad:directory-exists-p destination-path)
-                      (cl-fad:file-exists-p (conc destination-path "new-project-test.lisp"))
-                      (cl-fad:file-exists-p (conc destination-path "README"))
-                      (cl-fad:directory-exists-p (conc destination-path "skeleton-child-dir/"))
-                      (cl-fad:file-exists-p (conc destination-path "skeleton-child-dir/new-project.lisp"))
-                      (string= "My new-project in v1.0.4" (get-string-from-file (conc destination-path "new-project-test.lisp")))
-                      (string= "The project description." (get-string-from-file (conc destination-path "README")))
-                      (string= "My new-project by you." (get-string-from-file (conc destination-path "skeleton-child-dir/new-project.lisp")))
+    (create-new-project destination-path "new-project" "The project description." :quiet t)
+    (setf result (and (cl-fad:directory-exists-p (conc destination-path "/new-project/"))
+                      (cl-fad:file-exists-p (conc destination-path "new-project/new-project-test.lisp"))
+                      (cl-fad:file-exists-p (conc destination-path "new-project/README"))
+                      (cl-fad:directory-exists-p (conc destination-path "new-project/skeleton-child-dir/"))
+                      (cl-fad:file-exists-p (conc destination-path "new-project/skeleton-child-dir/new-project.lisp"))
+                      (string= "My new-project in v1.0.4" (get-string-from-file (conc destination-path "/new-project/new-project-test.lisp")))
+                      (string= "The project description." (get-string-from-file (conc destination-path "/new-project/README")))
+                      (string= "My new-project by you." (get-string-from-file (conc destination-path "/new-project/skeleton-child-dir/new-project.lisp")))
                       t))
     (delete-project-directory conf-dir)
-    (delete-project-directory destination-path)
+    (delete-project-directory (cl-fad:merge-pathnames-as-directory destination-path #P"new-project/"))
     result))
 
+(suite "Suite ui-skeleton-creator-test"
+       (test "Test create-new-project" #'test-create-new-project))

@@ -1,6 +1,7 @@
 (in-package #:cl-user)
 (defpackage #:noloop.skeleton-creator-test
-  (:use #:common-lisp)
+  (:use #:common-lisp
+        #:simplet)
   (:nicknames #:skeleton-creator-test)
   (:import-from #:skeleton-creator
                 #:string-replace-all
@@ -20,32 +21,6 @@
                 #:replace-markings-in-file
                 #:delete-project))
 (in-package #:noloop.skeleton-creator-test)
-
-;; Simple Test Runner
-(defun run ()
-  (suite
-   (test "Test string-replace-all" #'test-string-replace-all)
-   (test "Test write-string-in-file and get-string-from-file" #'test-write-string-in-file)
-   (test "Test pathname-is-file" #'test-pathname-is-file)
-   (test "Test not-match-list-ignore" #'test-not-match-list-ignore)
-   (test "Test walk-destination-directory" #'test-walk-destination-directory)
-   (test "Test merge-path-with-new-file-name" #'test-merge-path-with-new-file-name)
-   (test "Test merge-path-with-new-file-name-with-path-directory" #'test-merge-path-with-new-file-name-with-path-directory)
-   (test "Test string-match-markings" #'test-string-match-markings)
-   (test "Test replace-markings-in-file-names" #'test-replace-markings-in-file-names)
-   (test "Test replace-markings-in-file-names-with-ignores" #'test-replace-markings-in-file-names-with-ignores)
-   (test "Test replace-markings-in-file" #'test-replace-markings-in-file)
-   (test "Test replace-markings-in-file-with-ignores" #'test-replace-markings-in-file-with-ignores)
-   (test "Test replace-markings" #'test-replace-markings)))
-
-(defun test (stg test-fn)
-  (let ((result (funcall test-fn)))
-    (format t "~a: ~a~%" stg result)
-    result))
-
-(defun suite (&rest results)
-  (format t "Test result: ~a~%~%"
-          (every #'(lambda (el) (equal t el)) results)))
 
 (defun test-string-replace-all ()
   (let ((stg "old string")
@@ -103,9 +78,9 @@
 (defun test-walk-destination-directory ()
   (let* ((destination-directory "/tmp/walk-destination-directory/")
          (ignores '(".git/" "child-dir/"))
-        (not-match-fn (not-match-list-ignore
-                       destination-directory
-                       ignores))
+        ;; (not-match-fn (not-match-list-ignore
+        ;;                destination-directory
+        ;;                ignores))
          (path-file-1 (concatenate 'string destination-directory "PROJECT-NAME.lisp"))
          (path-child-directory (concatenate 'string destination-directory "child-dir/"))
         (path-file-2 (concatenate 'string path-child-directory "file-child.lisp"))
@@ -252,4 +227,19 @@
           (string= "new-project by your" (get-string-from-file expected-path-file-2))))
     (delete-project path-directory)
     (not (null result))))
+
+(suite "Suite skeleton-creator-test"
+       (test "Test string-replace-all" #'test-string-replace-all)
+       (test "Test write-string-in-file and get-string-from-file" #'test-write-string-in-file)
+       (test "Test pathname-is-file" #'test-pathname-is-file)
+       (test "Test not-match-list-ignore" #'test-not-match-list-ignore)
+       (test "Test walk-destination-directory" #'test-walk-destination-directory)
+       (test "Test merge-path-with-new-file-name" #'test-merge-path-with-new-file-name)
+       (test "Test merge-path-with-new-file-name-with-path-directory" #'test-merge-path-with-new-file-name-with-path-directory)
+       (test "Test string-match-markings" #'test-string-match-markings)
+       (test "Test replace-markings-in-file-names" #'test-replace-markings-in-file-names)
+       (test "Test replace-markings-in-file-names-with-ignores" #'test-replace-markings-in-file-names-with-ignores)
+       (test "Test replace-markings-in-file" #'test-replace-markings-in-file)
+       (test "Test replace-markings-in-file-with-ignores" #'test-replace-markings-in-file-with-ignores)
+       (test "Test replace-markings" #'test-replace-markings))
 

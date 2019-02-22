@@ -10,6 +10,8 @@
                 #:get-configure-directory
                 #:configure-skeleton-creator
                 #:create-new-project
-                #:delete-project-directory))
+                #:delete-project-directory
+                ;;#:license-under
+                ))
 
 

@@ -16,7 +16,8 @@
                  (:file "utils" :depends-on ("package"))
                  (:file "copy-directory" :depends-on ("package"))
                  (:file "skeleton-creator" :depends-on ("package" "utils" "copy-directory"))
-                 (:file "ui-skeleton-creator" :depends-on ("skeleton-creator")))))
+                 (:file "license-under" :depends-on ("skeleton-creator"))
+                 (:file "ui-skeleton-creator" :depends-on ("skeleton-creator" "license-under")))))
   :long-description
   #.(uiop:read-file-string
      (uiop:subpathname *load-pathname* "README.md"))
@@ -25,14 +26,16 @@
 (defsystem :skeleton-creator/test
   :author "noloop <noloop@zoho.com>"
   :maintainer "noloop <noloop@zoho.com>"
-  :license "GNU General Public License v3.0"
+  :license "GPLv3"
   :description "skeleton-creator Test."
-  :depends-on (:skeleton-creator)
+  :depends-on (:skeleton-creator :simplet)
+  :defsystem-depends-on (:simplet-asdf)
   :components ((:module "test"
                 :components
-                ((:file "copy-directory-test")
-                 (:file "skeleton-creator-test")
-                 (:file "ui-skeleton-creator-test"))))
-  :perform (test-op (op system) (progn (funcall (read-from-string "copy-directory-test::run"))
-                                       (funcall (read-from-string "skeleton-creator-test::run"))
-                                       (funcall (read-from-string "ui-skeleton-creator-test::run")))))
+                ((:test-file "copy-directory-test")
+                 (:test-file "skeleton-creator-test")
+                 (:test-file "ui-skeleton-creator-test")
+                 (:test-file "license-under-test"))))
+  :perform (test-op (op c)
+                    (progn (funcall (intern #.(string :run-simplet-asdf) :simplet) c)
+                           (symbol-call :simplet '#:run))))
