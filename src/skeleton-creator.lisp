@@ -3,11 +3,13 @@
 (defun init-skeleton-creator (conf-directory)
   (reverse (pairlis (list :conf
                           :project-destination-directory
+                          :date-year
                           :project-name
                           :project-description
                           :replace-ignore)
                     (list (init-conf conf-directory "skeleton-creator.conf")
                           "/tmp/"
+                          (get-date-year-string)
                           "PROJECT-NAME"
                           "PROJECT-DESCRIPTION"
                           '(".git/")))))
@@ -39,6 +41,7 @@ or leave empty to keep the previous configuration or default/actual configuratio
     (ensure-directories-exist path-project)
     (copy-skeleton-directory skeleton-creator path-project)
     (set-field skeleton-creator :project-destination-directory path-project)
+    (set-field skeleton-creator :date-year (get-date-year-string))
     (set-field skeleton-creator :project-name name)
     (set-field skeleton-creator :project-description description)
     (replace-markings skeleton-creator path-project)))
@@ -56,6 +59,7 @@ Markings are PROJECT-NAME and PROJECT-DESCRIPTION and all elements of the skelet
   (let ((ignores (get-field skeleton-creator :replace-ignore))
         (hash-markings (alexandria:copy-hash-table
                         (get-conf-hash (get-field skeleton-creator :conf)))))
+    (setf (gethash :DATE-YEAR hash-markings) (get-field skeleton-creator :date-year))
     (setf (gethash :PROJECT-NAME hash-markings) (get-field skeleton-creator :project-name))
     (setf (gethash :PROJECT-DESCRIPTION hash-markings) (get-field skeleton-creator :project-description))
     (replace-markings-in-file-names destination-directory hash-markings ignores)

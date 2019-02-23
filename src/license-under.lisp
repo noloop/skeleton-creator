@@ -21,7 +21,8 @@
                          "LICENSE")
                         (get-string-license licenses-directory license-name)))
 
-;; (defun write-license-notices ())
+(defun write-license-notices (project-directory licenses-directory license-name hash-markings)
+  )
 
 ;; (defun write-in-readme ())
 

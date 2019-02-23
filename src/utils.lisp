@@ -33,3 +33,9 @@
          (old (concatenate 'string "\\Q" old)))
     (cl-ppcre:regex-replace-all old stg new)))
 
+(defun get-date-year-string ()
+  "Returns current year as a string."
+  (multiple-value-bind (sec min hr day mon yr dow dst-p tz)
+      (get-decoded-time)
+    (declare (ignore sec min hr day mon dow dst-p tz))
+    (format nil "~a" yr)))
