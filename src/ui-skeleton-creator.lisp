@@ -20,12 +20,13 @@
                         (progn (create-project sk destination-directory name description)
                                (if (not quiet)
                                    (format t "~a" "Project created successfully."))))
-      (error (c)
-        (if existing-directory
-            (delete-project-directory
-             (concatenate 'string destination-directory name "/")))
-        (if (not quiet)
-            (format t "~a" "The project was NOT created successfully!"))))))
+        (error (c)
+          (declare (ignore c))
+          (if existing-directory
+              (delete-project-directory
+               (concatenate 'string destination-directory name "/")))
+          (if (not quiet)
+              (format t "~a" "The project was NOT created successfully!"))))))
 
   (defun delete-project-directory (project-directory)
     (delete-project project-directory)))

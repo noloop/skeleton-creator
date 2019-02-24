@@ -45,14 +45,23 @@
              (write-string-in-file path new-string-file))))
    ignores))
 
+(defun write-in-readme (project-directory notices-directory license-name hash-markings)
+  (let* ((path-readme (cl-fad:merge-pathnames-as-file
+                       project-directory
+                       "README.md"))
+         (path-notice (get-notice-path notices-directory license-name))
+         (new-notice (file-string-replace-markings
+                      path-notice
+                      hash-markings))
+         (new-string
+           (format nil "~a~%~%~a~%~%~a~%"
+                   (get-string-from-file path-readme)
+                   "### LICENSE"
+                   new-notice)))
+    (write-string-in-file path-readme new-string)))
+
 (defun get-notice-path (notices-directory license-name)
   (cl-fad:merge-pathnames-as-file
    notices-directory
    (conc (string-downcase license-name)
          "-notice.txt")))
-
-;; (search "LICENSE NOTICE" (get-string-from-file stg))
-#| LICENSE NOTICE
-
-new-project (C) 2019 by your.
-|#

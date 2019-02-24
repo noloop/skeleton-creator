@@ -12,6 +12,7 @@
                 #:create-license-file
                 #:get-notice-path
                 #:write-license-notices
+                #:write-in-readme
                 ;;#:license-under
                 ))
 (in-package #:noloop.license-under-test)
@@ -121,9 +122,42 @@
     (delete-project-directory path-directory)
     result))
 
+(defun test-write-in-readme ()
+  (let* ((path-directory "/tmp/test-write-license-notices/")
+         (path-conf-directory (cl-fad:merge-pathnames-as-directory path-directory ".conf/"))
+         (path-licenses-directory (cl-fad:merge-pathnames-as-directory path-conf-directory "licenses/"))
+         (path-notices-directory (cl-fad:merge-pathnames-as-directory path-licenses-directory "notices/"))
+         (path-notice (cl-fad:merge-pathnames-as-file path-notices-directory "null-license-notice.txt"))
+         (path-project-directory (cl-fad:merge-pathnames-as-directory path-directory "new-project-test/"))
+         (path-project-readme (cl-fad:merge-pathnames-as-file path-project-directory "README.md"))
+         (license-name "null-license")
+         (expected-content (format nil "~a~%~%~a~%~%~a~%"
+                                   "readme..."
+                                   "### LICENSE"
+                                   "new-project (C) 2019 by your."))
+         (hash-markings (make-hash-table))
+         (result nil))
+    (ensure-directories-exist path-directory)
+    (ensure-directories-exist path-conf-directory)
+    (ensure-directories-exist path-licenses-directory)
+    (ensure-directories-exist path-notices-directory)
+    (ensure-directories-exist path-project-directory)
+    (write-string-in-file path-notice "PROJECT-NAME (C) DATE-YEAR by AUTHOR.")
+    (write-string-in-file path-project-readme "readme...")
+    (setf (gethash :PROJECT-NAME hash-markings) "new-project")
+    (setf (gethash :AUTHOR hash-markings) "your")
+    (setf (gethash :EMAIL hash-markings) "your@email.com")
+    (setf (gethash :DATE-YEAR hash-markings) "2019")
+    (write-in-readme path-project-directory path-notices-directory license-name hash-markings)
+    (setf result
+          (string= expected-content (get-string-from-file path-project-readme)))
+    (delete-project-directory path-directory)
+    result))
+
 (suite "Suite license-under-test"
        (test "Test get-string-license" #'test-get-string-license)
        (test "Test create-license-file" #'test-create-license-file)
        (test "Test get-notice-path" #'test-get-notice-path)
-       (test "Test write-license-notices" #'test-write-license-notices))
+       (test "Test write-license-notices" #'test-write-license-notices)
+       (test "Test write-in-readme" #'test-write-in-readme))
 
