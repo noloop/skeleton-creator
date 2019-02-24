@@ -124,7 +124,9 @@ Markings are PROJECT-NAME and PROJECT-DESCRIPTION and all elements of the skelet
 (defun dolist-ignores (path destination ignores)
   (let ((result t))
     (dolist (i ignores)
-      (if (cl-fad:pathname-equal path (concatenate 'string (namestring destination) i))
+      (if (cl-fad:pathname-equal
+           (namestring path)
+           (concatenate 'string (namestring destination) i))
           (progn (setf result nil) (return))
           (setf result t)))
     result))
