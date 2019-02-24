@@ -1,18 +1,24 @@
 (in-package #:noloop.skeleton-creator)
 
-;; (defun license-under (project-directory
-;;                         licenses-directory
-;;                         license-name
-;;                         &key (create-license-file-p t)
-;;                              (write-license-notices-p t))
-;;   (if (null license-name)
-;;       (return-from license-project "No license was specified. Configure in your skeleton-creator.conf file or pass the key argument :license-name with the license name. Read the documentation for see the available names."))
-;;   (if create-license-file-p
-;;       (create-license-file project-directory licenses-directory license-name))
-;;   (if write-license-notices-p
-;;       (write-license-notices project-directory license-name))
-;;   (if write-in-readme-p
-;;       (write-in-readme project-directory license-name)))
+(defun license-under (project-directory
+                      licenses-directory
+                      license-name
+                      hash-markings
+                      ignores
+                      create-license-file-p
+                      write-license-notices-p
+                      write-in-readme-p)
+  (let ((notices-directory (cl-fad:merge-pathnames-as-directory
+                            licenses-directory
+                            "notices/")))
+    (if (null license-name)
+        (return-from license-under "No license was specified. Configure in your skeleton-creator.conf file or pass the key argument :license-name with the license name. Read the documentation for see the available names."))
+    (if create-license-file-p
+        (create-license-file project-directory licenses-directory license-name))
+    (if write-license-notices-p
+        (write-license-notices project-directory notices-directory license-name hash-markings ignores))
+    (if write-in-readme-p
+        (write-in-readme project-directory notices-directory license-name hash-markings))))
   
 (defun create-license-file (project-directory licenses-directory license-name)
   (write-string-in-file (cl-fad:merge-pathnames-as-file
@@ -46,19 +52,20 @@
    ignores))
 
 (defun write-in-readme (project-directory notices-directory license-name hash-markings)
-  (let* ((path-readme (cl-fad:merge-pathnames-as-file
-                       project-directory
-                       "README.md"))
-         (path-notice (get-notice-path notices-directory license-name))
-         (new-notice (file-string-replace-markings
-                      path-notice
-                      hash-markings))
-         (new-string
-           (format nil "~a~%~%~a~%~%~a~%"
-                   (get-string-from-file path-readme)
-                   "### LICENSE"
-                   new-notice)))
-    (write-string-in-file path-readme new-string)))
+  (let ((path-readme (cl-fad:merge-pathnames-as-file
+                      project-directory
+                      "README.md")))
+    (if (not (search "### LICENSE" (get-string-from-file path-readme)))
+        (let* ((path-notice (get-notice-path notices-directory license-name))
+               (new-notice (file-string-replace-markings
+                            path-notice
+                            hash-markings))
+               (new-string
+                 (format nil "~a~%~%~a~%~%~a~%"
+                         (get-string-from-file path-readme)
+                         "### LICENSE"
+                         new-notice)))
+          (write-string-in-file path-readme new-string)))))
 
 (defun get-notice-path (notices-directory license-name)
   (cl-fad:merge-pathnames-as-file
