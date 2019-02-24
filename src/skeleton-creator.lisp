@@ -26,6 +26,15 @@
 (defun get-conf-dir (skeleton-creator)
   (get-conf-directory (get-field skeleton-creator :conf)))
 
+(defun get-hash-markings (skeleton-creator)
+  (let ((hash-markings
+          (alexandria:copy-hash-table
+           (get-conf-hash (get-field skeleton-creator :conf)))))
+    (setf (gethash :DATE-YEAR hash-markings) (get-field skeleton-creator :date-year))
+    (setf (gethash :PROJECT-NAME hash-markings) (get-field skeleton-creator :project-name))
+    (setf (gethash :PROJECT-DESCRIPTION hash-markings) (get-field skeleton-creator :project-description))
+    hash-markings))
+
 ;;; !!!!!!!lembrar de copiar diretorio do proprio repositorio chamado default-conf-directory dando opcao de copiar ou o usuario criar o seu
 (defun conf-skeleton-creator (skeleton-creator)
   (format t "SKELETON CREATOR CONFIGURATION~%")
@@ -48,7 +57,9 @@ or leave empty to keep the previous configuration or default/actual configuratio
 
 (defun copy-skeleton-directory (skeleton-creator destination-directory)
   (copy-directory
-   (concatenate 'string (get-conf-dir skeleton-creator) "skeleton/")
+   (cl-fad:merge-pathnames-as-directory
+    (get-conf-dir skeleton-creator)
+    "skeleton/")
    destination-directory
    :overwrite t))
 
@@ -57,11 +68,7 @@ or leave empty to keep the previous configuration or default/actual configuratio
 2 - Replace the strings within the contents of the files with markings values.
 Markings are PROJECT-NAME and PROJECT-DESCRIPTION and all elements of the skeleton.conf configuration file."
   (let ((ignores (get-field skeleton-creator :replace-ignore))
-        (hash-markings (alexandria:copy-hash-table
-                        (get-conf-hash (get-field skeleton-creator :conf)))))
-    (setf (gethash :DATE-YEAR hash-markings) (get-field skeleton-creator :date-year))
-    (setf (gethash :PROJECT-NAME hash-markings) (get-field skeleton-creator :project-name))
-    (setf (gethash :PROJECT-DESCRIPTION hash-markings) (get-field skeleton-creator :project-description))
+        (hash-markings (get-hash-markings skeleton-creator)))
     (replace-markings-in-file-names destination-directory hash-markings ignores)
     (replace-markings-in-file destination-directory hash-markings ignores)))
 

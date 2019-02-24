@@ -265,5 +265,3 @@
        (test "Test write-in-readme-already-licensed" #'test-write-in-readme-already-licensed)
        (test "Test license-under" #'test-license-under))
 
-
-
