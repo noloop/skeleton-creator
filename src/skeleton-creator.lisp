@@ -3,15 +3,15 @@
 (defun init-skeleton-creator (conf-directory)
   (reverse (pairlis (list :conf
                           :project-destination-directory
-                          :date-year
-                          :project-name
-                          :project-description
+                          :sk-date-year
+                          :sk-project-name
+                          :sk-project-description
                           :replace-ignore)
                     (list (init-conf conf-directory "skeleton-creator.conf")
                           "/tmp/"
                           (get-date-year-string)
-                          "PROJECT-NAME"
-                          "PROJECT-DESCRIPTION"
+                          "SK-PROJECT-NAME"
+                          "SK-PROJECT-DESCRIPTION"
                           '(".git/")))))
 
 (defun set-field (skeleton-creator field new-value)
@@ -30,9 +30,9 @@
   (let ((hash-markings
           (alexandria:copy-hash-table
            (get-conf-hash (get-field skeleton-creator :conf)))))
-    (setf (gethash :DATE-YEAR hash-markings) (get-field skeleton-creator :date-year))
-    (setf (gethash :PROJECT-NAME hash-markings) (get-field skeleton-creator :project-name))
-    (setf (gethash :PROJECT-DESCRIPTION hash-markings) (get-field skeleton-creator :project-description))
+    (setf (gethash :SK-DATE-YEAR hash-markings) (get-field skeleton-creator :sk-date-year))
+    (setf (gethash :SK-PROJECT-NAME hash-markings) (get-field skeleton-creator :sk-project-name))
+    (setf (gethash :SK-PROJECT-DESCRIPTION hash-markings) (get-field skeleton-creator :sk-project-description))
     hash-markings))
 
 ;;; !!!!!!!lembrar de copiar diretorio do proprio repositorio chamado default-conf-directory dando opcao de copiar ou o usuario criar o seu
@@ -50,9 +50,9 @@ or leave empty to keep the previous configuration or default/actual configuratio
     (ensure-directories-exist path-project)
     (copy-skeleton-directory skeleton-creator path-project)
     (set-field skeleton-creator :project-destination-directory path-project)
-    (set-field skeleton-creator :date-year (get-date-year-string))
-    (set-field skeleton-creator :project-name name)
-    (set-field skeleton-creator :project-description description)
+    (set-field skeleton-creator :sk-date-year (get-date-year-string))
+    (set-field skeleton-creator :sk-project-name name)
+    (set-field skeleton-creator :sk-project-description description)
     (replace-markings skeleton-creator path-project)))
 
 (defun copy-skeleton-directory (skeleton-creator destination-directory)
