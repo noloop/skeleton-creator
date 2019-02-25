@@ -134,20 +134,20 @@ SKELETON-CREATOR> (configure-skeleton-creator)
 
 ## create-new-project
 
-Criar um novo projeto utilizando o diretório `skeleton/`, ao chamar a função `create-new-project` você irá ter que preencher alguns dados, como diretório de destino onde o projeto irá ser criado, nome do projeto, descrição do projeto, e caso ainda não tenha configurado um diretório de configuração padrão válido, poderá optar por clonar o diretório de configuração padrão do skeleton-creator para um diretório destino de sua escolha. Fique atento ao texto e as perguntas que aparecerão no REPL.
+Create a new project using the `skeleton/` directory, when calling the `create-new-project` function you will have to fill in some data such as the destination directory where the project will be created, project name, and if you want to if not already set up a valid default configuration directory, you can choose to clone the skeleton-creator default configuration directory to a destination directory of your choice. Stay tuned for the text of questions that will appear in REPL.
 
-Você também pode chamar `(create-new-project :force t)` que irá sobrepor o diretório de projeto existente caso ele já exista. E `(create-new-project :use-default-conf-p t)` que irá utilizar o diretório de configuração padrão já indo para o momento em que você deve dar ao REPL o diretório de destino onde quer que o diretório de configuração padrão seja clonado.
+You can also call `(create-new-project: force t)` which will override the  project directory if it already exists.
 
 ```lisp
 SKELETON-CREATOR> (create-new-project)
 SKELETON-CREATOR> (create-new-project :force t)
-SKELETON-CREATOR> (create-new-project :use-default-conf-p t)
-SKELETON-CREATOR> (create-new-project :force t :use-default-conf-p t)
 ```
 
 ## delete-project-directory
 
-Você pode deletar seus diretório de projetos criados, como qualquer outro diretório com essa função, por isso, use-a com cuidado, ela tem o poder de excluir qualquer diretório passado para ela recursivamente. vocêr deve chamá-la assim `(delete-project-directory "/tmp/new-project-test/")`, imaginando que você tenha já criado um diretório "new-project-test/" em seu diretório "/tmp/", lembrando que com isso você deletará todo o projeto "new-project-test/" recusirvamente.
+You can delete your created project directory, like any other directory with this function, so use it carefully, it has the power to delete any directory passed to it recursively. 
+
+You must call it `(delete-project-directory "/tmp/new-project-test/")`, imagining that you have already created a "new-project-test/" in your in your directory "/tmp/", remembering again that with this you will delete the entire project "new-project-test/".
 
 ```lisp
 SKELETON-CREATOR> (delete-project-directory "/tmp/new-project-test/")
