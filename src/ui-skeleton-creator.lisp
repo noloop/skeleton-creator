@@ -11,9 +11,9 @@
   (defun configure-skeleton-creator ()
     (conf-skeleton-creator sk))
 
-  (defun create-new-project (&key quiet force use-default-conf-p)
+  (defun create-new-project (&key force use-default-conf-p)
     (if use-default-conf-p
-        (create-new-project-interactive quiet force use-default-conf-p)
+        (create-new-project-interactive force use-default-conf-p)
         (let ((conf-dir-exists-p
                 (cl-fad:directory-exists-p (get-configure-directory)))
               (conf-file-exits-p
@@ -32,20 +32,20 @@
           (if conf-dir-exists-p
               (if conf-file-exits-p
                   (if skeleton-dir-exists-p
-                      (create-new-project-interactive quiet force nil)
-                      (y-or-n-default-conf msg-skeleton-not-existing quiet force use-default-conf-p))
-                  (y-or-n-default-conf msg-conf-file-not-existing quiet force use-default-conf-p))
-              (y-or-n-default-conf msg-conf-dir-not-existing quiet force use-default-conf-p)))))
+                      (create-new-project-interactive force nil)
+                      (y-or-n-default-conf msg-skeleton-not-existing force use-default-conf-p))
+                  (y-or-n-default-conf msg-conf-file-not-existing force use-default-conf-p))
+              (y-or-n-default-conf msg-conf-dir-not-existing force use-default-conf-p)))))
   
-  (defun y-or-n-default-conf (warning-msg quiet force use-default-conf-p)
+  (defun y-or-n-default-conf (warning-msg force use-default-conf-p)
     (if (use-default-conf-p warning-msg)
         (progn (copy-default-conf)
                (configure-skeleton-creator)
                (format t "~%~%")
-               (create-new-project-interactive quiet force use-default-conf-p))
+               (create-new-project-interactive force use-default-conf-p))
         (format t "~%~a~%" "No project directory was created! Configure a configuration directory that has at least one skeleton/ directory and a skeleton-creator.conf file inside it. Use the set-configure-directory and get-configure-directory functions to do this.")))
 
-  (defun create-new-project-interactive (quiet force use-default-conf-p)
+  (defun create-new-project-interactive (force use-default-conf-p)
     (if use-default-conf-p
         (progn (copy-default-conf)
                (configure-skeleton-creator)
@@ -59,7 +59,6 @@
           (create-new-project-not-interactive destination
                                               name
                                               description
-                                              :quiet quiet
                                               :force force)
           (format t "~a~%" "Nothing changed!"))))
 
@@ -152,7 +151,7 @@
                    write-in-readme-p))
 
   (defun delete-project-directory (project-directory)
-    (format t "~%~a ~a?~%" "Tem certeza que deseja excluir o diretório" project-directory)
+    (format t "~%~a ~a?~%" "Are you sure you want to delete the directory" project-directory)
     (if (yes-or-no?)
         (progn (delete-project project-directory)
                (format t "~%~a~%" "Directory deleted successfully!"))

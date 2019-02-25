@@ -1,37 +1,37 @@
 # skeleton-creator
 
-### _Create projects from a skeleton directory._
+### _Crie projetos a partir de um diretório esqueleto._
 
-Read this in other languages: [English](https://github.com/noloop/skeleton-creator/README.md), [Portuguese-br](https://github.com/noloop/skeleton-creator/README.pt-br.md)
+Leia isto em outros idiomas: [English](https://github.com/noloop/skeleton-creator/README.md), [Portuguese-br](https://github.com/noloop/skeleton-creator/README.pt-br.md)
 
-## Getting Started in skeleton-creator
+## Começando no skeleton-creator
 
-### Portability
+### Portabilidade
 
 I just tested on Linux using SBCL, I'm not sure what the behavior is in others, but I believe it will work.
 
-### Dependencies
+### Dependências
 
 [:conf](https://github.com/noloop/conf)
 [:cl-fad](https://github.com/edicl/cl-fad)
 [:cl-ppcre](https://github.com/edicl/cl-ppcre)
 
-### Instalation
+### Instalação
 
 **1 - Download skeleton-creator system**
 
-By quicklisp:
+No quicklisp:
 
 ```
 IN PROGRESS...
 ```
 
-or directly from github:
+ou diretamente do github:
 
 ```
 git clone https://github.com/noloop/skeleton-creator.git
 ```
-**2 - Install skeleton-creator**
+**2 - Instale o skeleton-creator**
 
 By quicklisp:
 
@@ -39,7 +39,7 @@ By quicklisp:
 IN PROGRESS...
 ```
 
-or directly from asdf:
+ou diretamente do asdf:
 
 ```lisp
 (asdf:load-system :skeleton-creator)
@@ -47,21 +47,21 @@ or directly from asdf:
 
 _**Note: Remember to configure asdf to find your directory where you downloaded the libraries (asdf call them "systems") above, if you do not know how to make a read at: https://common-lisp.net/project/asdf/asdf/Configuring-ASDF-to-find-your-systems.html or https://lisp-lang.org/learn/writing-libraries.**_
 
-## How does skeleton-creator work?
+## Como skeleton-creator funciona?
 
-It is necessary that there is a configuration directory where the skeleton-creator will look, you can configure the path of this directory as you will see in the topics below, the configuration directory tree should look like this:
+É necessário que exista um diretório de configuração para onde o skeleton-creator irá olhar, você poderá configurar o caminho desse diretório como verá nos tópicos abaixo, a árvore do diretório de configuração deve ser assim:
 
 ```lisp
-skeleton-creator-conf/     ; or whatever name you want
-    skeleton/              ; the skeleton cloned while creating your projects
-    license/               ; your license files, the files should have type .txt
-        notices/           ; your notices files, the files should have type .txt
-    skeleton-creator.conf  ; skeleton-creator configuration file
+skeleton-creator-conf/     ; ou o nome que quiser
+    skeleton/              ; o esqueleto clonado ao criar seus projetos
+    license/               ; seus arquivos de licença, os arquivos devem ter o tipo .txt
+        notices/           ; seus arquivos de aviso de licença, os arquivos devem ter o tipo .txt
+    skeleton-creator.conf  ; o arquivo de configuração do skeleton-creator
 ```
 
-if you do not want to create a configuration directory manually, you may also choose to use the skeleton-creator default configuration directory, you can see it in the same repository, the **default-conf/** directory.
+caso não queira criar um diretório de condfiguração manualmente, você poderá também poderá optar por usar o diretório de configuração padrão do skeleton-creator, você pode ver ele neste mesmo respositório, o diretório **default-conf/**.
 
-The configuration file is a lisp list following the following pattern:
+O arquivo de configuração é uma lista lisp seguindo o seguinte padrão:
 
 ```lisp
 (:SK-AUTHOR "you"
@@ -72,9 +72,9 @@ The configuration file is a lisp list following the following pattern:
 :SK-GIT-SERVICE "github")
 ```
 
-How it works?
+Como funciona?
 
-You configure a markup in your configuration file, they do not need to be the same as configured above. And in your files inside the "skeleton/ " directory you write it where you want to have the text set in your markup. An example, using the above configuration file for a README.md file:
+Você configura uma marcação no seu arquivo de configuração, não precisam ser as acima, e em seus arquivos dentro do diretório skeleton/ você coloca elas onde quer ter o texto cnfigurado em sua marcação. Um exemplo, utilizando do arquivo de configuração acima para um arquivo README.md:
 
 ```lisp
 # SK-PROJECT-NAME in vSK-VERSION by SK-AUTHOR
@@ -92,9 +92,9 @@ SK-LICENSE
 Copyright (C) SK-DATE-YEAR SK-AUTHOR
 ```
 
-Note that there is a `SK-PROJECT-NAME, SK-PROJECT-DESCRIPTION, SK-DATE-YEAR` which is not in my configuration file, this is because there are 3 markings that are skeleton-creator default, `SK-PROJECT-NAME` and `SK-PROJECT-DESCRIPTION` will be configured by you when calling the `create-project` function. The other is `SK-DATE-YEAR` which stores the current year and is automatically configured, `SK-DATE-YEAR` is very useful for license notices files.
+Perceba que há um `SK-PROJECT-NAME, SK-PROJECT-DESCRIPTION, SK-DATE-YEAR` qual não está em meu arquivo de configuração, isso acontece porque há 3 marcações que são padrão do skeleton configuração, duas delas: `SK-PROJECT-NAME` e `SK-PROJECT-DESCRIPTION` serão configuradas por você ao chamar a função `create-project`. A outra é `SK-DATE-YEAR` que armazena o ano atual e é configurada automáticamente, `SK-DATE-YEAR` é muito útil para arquivos de avisos de licensa.
 
-Then when calling `create-project` and entering the project name 'my-project` and the description `My description project ...`, being in the year `2019`, your README.md file in the created project directory should be like this:
+Então ao chamar `create-project` e inserir o nome de projeto "my-project" e a descrição "My description project...", estando no ano de 2019, seu arquivo README.md no diretório de projeto criado, deverá estar assim:
 
 ```lisp
 # create-project in v0.1.0 by you
@@ -112,11 +112,11 @@ GPLv3
 Copyright (C) 2019 you
 ```
 
-I recommend using a prefix(how SK-) before your markup to avoid overlapping words that might be common in other files, such as the word LICENSE, which usually has several appearances in the license warning files.
+Recomendo utilizar um prefixo antes de suas marcações para evitar de sobrepor palavras que possam ser communs em outros arquivos, como a palavra LICENSE, a qual normalmente há diversas aparições nos arquivos de aviso de licença.
 
-## set-configure-directory and get-configure-directory
+## set-configure-directory e get-configure-directory
 
-You can configure the configuration directory manually, skeleton-creator will look at what you configure, you use `set-configure-directory` to configure, and `get-configure-directory` to get the path that the skeleton-creator is currently looking at.
+Você pode configurar o diretório de configuração manualmente, skeleton-creator irá olhar para o que aqui estiver configurado, você usa set-configure-directory para cnfigurar, e get-configure-directory para obter o caminho que o skeleton-creator está olhando atualmente.
 
 ```lisp
 SKELETON-CREATOR> (set-configure-directory "/tmp/.config/skeleton-creator-conf/")
@@ -124,9 +124,10 @@ SKELETON-CREATOR> (set-configure-directory "/tmp/.config/skeleton-creator-conf/"
 SKELETON-CREATOR> (get-configure-directory)
 "/tmp/.config/skeleton-creator-conf/"
 ```
+
 ## configure-skeleton-creator
 
-To interactively configure the `skeleton-creator.conf` configuration file.
+Para configurar interativamente o arquivo de configuração `skeleton-creator.conf`.
 
 ```lisp
 SKELETON-CREATOR> (configure-skeleton-creator)
@@ -152,6 +153,8 @@ Você pode deletar seus diretório de projetos criados, como qualquer outro dire
 ```lisp
 SKELETON-CREATOR> (delete-project-directory "/tmp/new-project-test/")
 ```
+
+## license-project
 
 
 ## API
