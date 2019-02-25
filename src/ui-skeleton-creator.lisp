@@ -152,4 +152,8 @@
                    write-in-readme-p))
 
   (defun delete-project-directory (project-directory)
-    (delete-project project-directory)))
+    (format t "~%~a ~a?~%" "Tem certeza que deseja excluir o diretório" project-directory)
+    (if (yes-or-no?)
+        (progn (delete-project project-directory)
+               (format t "~%~a~%" "Directory deleted successfully!"))
+        (format t "~%~a~%" "Nothing was excluded."))))
