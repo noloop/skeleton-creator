@@ -168,7 +168,7 @@ Ao chamar a função como mostrado abaixo, você terá que responder umas pergun
 SKELETON-CREATOR> (license-project)
 ```
 
-Você precisa ter em seu diretório de configuração um diretório chamado licenses/ e um diretório chamado /noticies para utilizar essa função. Os arquivos no diretório licenses/ devem seguir o padrão: "<license-name>.txt", enquanto os arquivos no diretório notices/ devem seguir o padrão: "<license-name>-notice.txt".
+Você precisa ter em seu diretório de configuração um diretório chamado licenses/ e um diretório chamado noticies/ para utilizar essa função. Os arquivos no diretório licenses/ devem seguir o padrão: "\<license-name\>.txt", enquanto os arquivos no diretório notices/ devem seguir o padrão: "\<license-name\>-notice.txt".
 
 Caso você não tenha configurado um diretório de configuração, skeleton-creator está atento e perguntará se você deseja utilizar o diretório de configuração padrão clonado para um diretório destino qual ele irá te pedir. No momento o diretório licenses/ padrão lhe dá duas alternativas de licensa: GPLv3 e CC0.
 
