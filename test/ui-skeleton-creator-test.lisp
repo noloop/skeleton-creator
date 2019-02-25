@@ -10,9 +10,9 @@
                 #:set-configure-directory
                 #:get-configure-directory
                 #:configure-skeleton-creator
-                #:create-new-project
+                #:create-new-project-not-interactive
                 #:delete-project-directory
-                #:license-project))
+                #:license-project-not-interactive))
 (in-package #:ui-skeleton-creator-test)
 
 (defun test-create-new-project ()
@@ -34,11 +34,12 @@
     (write-string-in-file sk-file-2 "SK-PROJECT-DESCRIPTION")
     (write-string-in-file sk-file-3 "My SK-PROJECT-NAME by SK-AUTHOR.")
     (set-configure-directory conf-dir)
-    (create-new-project destination-path
-                        "new-project"
-                        "The project description."
-                        :quiet t
-                        :force t)
+    (create-new-project-not-interactive
+     destination-path
+     "new-project"
+     "The project description."
+     :quiet t
+     :force t)
     (let* ((path-new-project
              (cl-fad:merge-pathnames-as-directory destination-path "new-project/"))
            (path-file-1
@@ -92,8 +93,13 @@
     (write-string-in-file sk-file-2 "SK-PROJECT-DESCRIPTION")
     (write-string-in-file sk-file-3 "My SK-PROJECT-NAME by SK-AUTHOR.")
     (set-configure-directory conf-dir)
-    (create-new-project destination-path "new-project" "The project description." :quiet t :force t)
-    (license-project
+    (create-new-project-not-interactive
+     destination-path
+     "new-project"
+     "The project description."
+     :quiet t
+     :force t)
+    (license-project-not-interactive
      (cl-fad:merge-pathnames-as-directory destination-path "new-project/")
      "null-license"
      :create-license-file-p t

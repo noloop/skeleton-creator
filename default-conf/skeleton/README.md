@@ -1,8 +1,8 @@
-# PROJECT-NAME
+# SK-PROJECT-NAME
 
-### _PROJECT-DESCRIPTION_
+### _SK-PROJECT-DESCRIPTION_
 
-## Getting Started in PROJECT-NAME
+## Getting Started in SK-PROJECT-NAME
 
 ### Portability
 
@@ -10,7 +10,7 @@
 
 ### Download and installation
 
-**1 - Download PROJECT-NAME system**
+**1 - Download SK-PROJECT-NAME system**
 
 By quicklisp:
 
@@ -21,9 +21,9 @@ IN PROGRESS...
 or directly from github:
 
 ```
-git clone https://GIT-SERVICE.com/AUTHOR/PROJECT-NAME.git
+git clone https://SK-GIT-SERVICE.com/SK-AUTHOR/SK-PROJECT-NAME.git
 ```
-**2 - Install PROJECT-NAME**
+**2 - Install SK-PROJECT-NAME**
 
 By quicklisp:
 
@@ -34,7 +34,7 @@ IN PROGRESS...
 or directly from asdf:
 
 ```lisp
-(asdf:load-system :PROJECT-NAME)
+(asdf:load-system :SK-PROJECT-NAME)
 ```
 
 _**Note: Remember to configure asdf to find your directory where you downloaded the libraries (asdf call them "systems") above, if you do not know how to make a read at: https://common-lisp.net/project/asdf/asdf/Configuring-ASDF-to-find-your-systems.html or https://lisp-lang.org/learn/writing-libraries.**_

@@ -7,8 +7,16 @@
 (defun is-ok? (fn)
   (format t "IS OK?(yes/no)~%")
   (if (string-equal "yes" (read))
-      fn
+      (funcall fn)
       nil))
+
+(defun yes-or-no? ()
+  (format t "(yes/no): ")
+  (let ((response (read-line)))
+    (if (or (string-equal "yes" response)
+            (string-equal "y" response))
+        t
+        nil)))
 
 (defun pathname-is-file (path)
   (and (not (cl-fad:directory-exists-p path))

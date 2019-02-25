@@ -35,13 +35,12 @@
     (setf (gethash :SK-PROJECT-DESCRIPTION hash-markings) (get-field skeleton-creator :sk-project-description))
     hash-markings))
 
-;;; !!!!!!!lembrar de copiar diretorio do proprio repositorio chamado default-conf-directory dando opcao de copiar ou o usuario criar o seu
 (defun conf-skeleton-creator (skeleton-creator)
-  (format t "SKELETON CREATOR CONFIGURATION~%")
+  (format t "~%- SKELETON CREATOR CONFIGURATION OF skeleton-creator.conf -~%")
   (format t "I will ask you some questions to create/modify 
 the skeleton-creator configuration file, you can answer them, 
-or leave empty to keep the previous configuration or default/actual configuration.~%")
-  (is-ok? (replace-conf (get-field skeleton-creator :conf))))
+or leave empty to keep the previous configuration or default/actual configuration.~%~%")
+  (is-ok? #'(lambda () (replace-conf (get-field skeleton-creator :conf)))))
 
 (defun create-project (skeleton-creator destination-directory name description)
   (let ((path-project (cl-fad:merge-pathnames-as-directory
@@ -66,7 +65,7 @@ or leave empty to keep the previous configuration or default/actual configuratio
 (defun replace-markings (skeleton-creator destination-directory)
   "1 - Replace the file names with the markings values.
 2 - Replace the strings within the contents of the files with markings values.
-Markings are PROJECT-NAME and PROJECT-DESCRIPTION and all elements of the skeleton.conf configuration file."
+Markings are SK-PROJECT-NAME and SK-PROJECT-DESCRIPTION and all elements of the skeleton.conf configuration file."
   (let ((ignores (get-field skeleton-creator :replace-ignore))
         (hash-markings (get-hash-markings skeleton-creator)))
     (replace-markings-in-file-names destination-directory hash-markings ignores)
