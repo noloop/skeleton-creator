@@ -157,9 +157,10 @@ SKELETON-CREATOR> (delete-project-directory "/tmp/new-project-test/")
 ## license-project
 
 Para licenciar seu código automáticamente, você pode utilizar a função `license-project`, ela pode fazer 3 coisas:
-1 - Criar um aquivo de licença chamado LICENSE na raiz do diretório projeto passado.
-2 - Criar avisos de licença no incio de todos os arquivos de seu projeto, podendo ignorar arquivos ou diretórios que não deseja que tenham o aviso.
-3 - Criar um tópico LICENSE com um aviso de licença no final do arquivo README.md, seguindo a sintaxe do Markdown.
+
+1. Criar um aquivo de licença chamado LICENSE na raiz do diretório projeto passado.
+2. Criar avisos de licença no inicio de todos os arquivos de seu projeto, podendo ignorar arquivos ou diretórios que não deseja que tenham o aviso.
+3. Criar um tópico LICENSE com um aviso de licença no final do arquivo README.md, seguindo a sintaxe do Markdown.
 
 Ao chamar a função como mostrado abaixo, você terá que responder umas perguntas, e escolher quais das 3 opções você desejará executar.
 

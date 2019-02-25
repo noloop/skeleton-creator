@@ -156,9 +156,10 @@ SKELETON-CREATOR> (delete-project-directory "/tmp/new-project-test/")
 ## license-project
 
 To license your code automatically, you can use the `license-project` function, it can do 3 things:
-1 - Create a license file named LICENSE in the root of the last project directory.
-2 - Create license warnings at the beginning of all files in your project, and you can ignore files or directories that you do not want to have the warning.
-3 - Create a LICENSE topic with a license warning at the end of the README.md file, following the Markdown syntax.
+
+1. Create a license file named LICENSE in the root of the last project directory.
+2. Create license warnings at the beginning of all files in your project, and you can ignore files or directories that you do not want to have the warning.
+3. Create a LICENSE topic with a license warning at the end of the README.md file, following the Markdown syntax.
 
 When calling the function as shown below, you will have to answer some questions, and choose which of the 3 options you will want to perform.
 
