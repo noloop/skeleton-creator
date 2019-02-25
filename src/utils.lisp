@@ -4,18 +4,20 @@
   "Synthetic sugar for concatenate strings."
   `(concatenate 'string ,@string-args))
 
-(defun is-ok? (fn)
-  (format t "IS OK?(yes/no)~%")
-  (if (string-equal "yes" (read))
-      (funcall fn)
-      nil))
-
 (defun yes-or-no? ()
   (format t "(yes/no): ")
   (let ((response (read-line)))
     (if (or (string-equal "yes" response)
             (string-equal "y" response))
         t
+        nil)))
+
+(defun yes-or-no?-fn (fn)
+  (format t "(yes/no): ")
+  (let ((response (read-line)))
+    (if (or (string-equal "yes" response)
+            (string-equal "y" response))
+        (funcall fn)
         nil)))
 
 (defun pathname-is-file (path)
@@ -47,3 +49,11 @@
       (get-decoded-time)
     (declare (ignore sec min hr day mon dow dst-p tz))
     (format nil "~a" yr)))
+
+(defun read-field (field-name)
+  (format t "~a" field-name)
+  (read-line))
+
+(defun empty-directory-p (path)
+  (and (null (directory (concatenate 'string path "/*")))
+       (null (directory (concatenate 'string path "/*/")))))

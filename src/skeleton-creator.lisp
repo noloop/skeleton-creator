@@ -36,11 +36,8 @@
     hash-markings))
 
 (defun conf-skeleton-creator (skeleton-creator)
-  (format t "~%- SKELETON CREATOR CONFIGURATION OF skeleton-creator.conf -~%")
-  (format t "I will ask you some questions to create/modify 
-the skeleton-creator configuration file, you can answer them, 
-or leave empty to keep the previous configuration or default/actual configuration.~%~%")
-  (is-ok? #'(lambda () (replace-conf (get-field skeleton-creator :conf)))))
+  "To edit the configurations of the skeleton-creator.conf configuration file."
+  (replace-conf (get-field skeleton-creator :conf)))
 
 (defun create-project (skeleton-creator destination-directory name description)
   (let ((path-project (cl-fad:merge-pathnames-as-directory
@@ -96,6 +93,7 @@ Markings are SK-PROJECT-NAME and SK-PROJECT-DESCRIPTION and all elements of the 
 
 (defun string-match-markings (stg hash-markings)
   (maphash #'(lambda (key value)
+               (declare (ignore value))
                (if (search (string key) stg)
                    (return-from string-match-markings key)))
            hash-markings))
