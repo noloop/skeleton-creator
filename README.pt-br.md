@@ -156,6 +156,20 @@ SKELETON-CREATOR> (delete-project-directory "/tmp/new-project-test/")
 
 ## license-project
 
+Para licenciar seu código automáticamente, você pode utilizar a função `license-project`, ela pode fazer 3 coisas:
+1 - Criar um aquivo de licença chamado LICENSE na raiz do diretório projeto passado.
+2 - Criar avisos de licença no incio de todos os arquivos de seu projeto, podendo ignorar arquivos ou diretórios que não deseja que tenham o aviso.
+3 - Criar um tópico LICENSE com um aviso de licença no final do arquivo README.md, seguindo a sintaxe do Markdown.
+
+Ao chamar a função como mostrado abaixo, você terá que responder umas perguntas, e escolher quais das 3 opções você desejará executar.
+
+```lisp
+SKELETON-CREATOR> (license-project)
+```
+
+Você precisa ter em seu diretório de configuração um diretório chamado licenses/ e um diretório chamado /noticies para utilizar essa função. Os arquivos no diretório licenses/ devem seguir o padrão: "<license-name>.txt", enquanto os arquivos no diretório notices/ devem seguir o padrão: "<license-name>-notice.txt".
+
+Caso você não tenha configurado um diretório de configuração, skeleton-creator está atento e perguntará se você deseja utilizar o diretório de configuração padrão clonado para um diretório destino qual ele irá te pedir. No momento o diretório licenses/ padrão lhe dá duas alternativas de licensa: GPLv3 e CC0.
 
 ## API
 
@@ -165,7 +179,7 @@ function **(get-configure-directory)**
 
 function **(configure-skeleton-creator)**
 
-function **(create-new-project &key force use-default-conf-p)**
+function **(create-new-project &key force)**
 
 function **(delete-project-directory project-directory)**
 

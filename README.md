@@ -153,6 +153,22 @@ You must call it `(delete-project-directory "/tmp/new-project-test/")`, imaginin
 SKELETON-CREATOR> (delete-project-directory "/tmp/new-project-test/")
 ```
 
+## license-project
+
+To license your code automatically, you can use the `license-project` function, it can do 3 things:
+1 - Create a license file named LICENSE in the root of the last project directory.
+2 - Create license warnings at the beginning of all files in your project, and you can ignore files or directories that you do not want to have the warning.
+3 - Create a LICENSE topic with a license warning at the end of the README.md file, following the Markdown syntax.
+
+When calling the function as shown below, you will have to answer some questions, and choose which of the 3 options you will want to perform.
+
+```lisp
+SKELETON-CREATOR> (license-project)
+```
+
+You need to have in your configuration directory a directory called licenses/ and a directory called noticies/ to use this function. The files in the licenses/ directory should follow the default: "<license-name>.txt", while the files in the notices/ directory should follow the default: "<license-name>-notice.txt".
+
+If you have not set up a configuration directory, skeleton-creator is aware and will ask if you want to use the cloned default configuration directory for a destination directory which it will ask you to do. Currently the licenses/ default directory gives you two license alternatives: GPLv3 and CC0.
 
 ## API
 
@@ -162,7 +178,7 @@ function **(get-configure-directory)**
 
 function **(configure-skeleton-creator)**
 
-function **(create-new-project &key force use-default-conf-p)**
+function **(create-new-project &key force)**
 
 function **(delete-project-directory project-directory)**
 
