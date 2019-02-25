@@ -167,7 +167,7 @@ When calling the function as shown below, you will have to answer some questions
 SKELETON-CREATOR> (license-project)
 ```
 
-You need to have in your configuration directory a directory called licenses/ and a directory called noticies/ to use this function. The files in the licenses/ directory should follow the default: "<license-name>.txt", while the files in the notices/ directory should follow the default: "<license-name>-notice.txt".
+You need to have in your configuration directory a directory called licenses/ and a directory called noticies/ to use this function. The files in the licenses/ directory should follow the default: "\<license-name\>.txt", while the files in the notices/ directory should follow the default: "\<license-name\>-notice.txt".
 
 If you have not set up a configuration directory, skeleton-creator is aware and will ask if you want to use the cloned default configuration directory for a destination directory which it will ask you to do. Currently the licenses/ default directory gives you two license alternatives: GPLv3 and CC0.
 
