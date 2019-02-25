@@ -2,7 +2,7 @@
 
 ### _Crie projetos a partir de um diretório esqueleto._
 
-Leia isto em outros idiomas: [English](https://github.com/noloop/skeleton-creator/README.md), [Portuguese-br](https://github.com/noloop/skeleton-creator/README.pt-br.md)
+Leia isto em outros idiomas: [English](https://github.com/noloop/skeleton-creator/blob/master/README.md), [Portuguese-br](https://github.com/noloop/skeleton-creator/blob/master/README.pt-br.md)
 
 ## Começando no skeleton-creator
 
