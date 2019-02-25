@@ -94,7 +94,7 @@ Copyright (C) SK-DATE-YEAR SK-AUTHOR
 
 Note that there is a `SK-PROJECT-NAME, SK-PROJECT-DESCRIPTION, SK-DATE-YEAR` which is not in my configuration file, this is because there are 3 markings that are skeleton-creator default, `SK-PROJECT-NAME` and `SK-PROJECT-DESCRIPTION` will be configured by you when calling the `create-project` function. The other is `SK-DATE-YEAR` which stores the current year and is automatically configured, `SK-DATE-YEAR` is very useful for license notices files.
 
-Then when calling `create-project` and entering the project name 'my-project` and the description `My description project ...`, being in the year `2019`, your README.md file in the created project directory should be like this:
+Then when calling `create-project` and entering the project name `my-project` and the description `My description project ...`, being in the year `2019`, your README.md file in the created project directory should be like this:
 
 ```lisp
 # create-project in v0.1.0 by you
