@@ -50,6 +50,10 @@
     (declare (ignore sec min hr day mon dow dst-p tz))
     (format nil "~a" yr)))
 
+(defun to-ask (question)
+  (format t "~a" question)
+  (yes-or-no?))
+
 (defun read-field (field-name)
   (format t "~a" field-name)
   (read-line))
@@ -57,3 +61,7 @@
 (defun empty-directory-p (path)
   (and (null (directory (concatenate 'string path "/*")))
        (null (directory (concatenate 'string path "/*/")))))
+
+(defun string-empty-p (stg)
+  (= (length stg) 0))
+

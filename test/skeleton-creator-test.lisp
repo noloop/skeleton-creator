@@ -136,7 +136,7 @@
     (setf result (and
                   (cl-fad:file-exists-p (concatenate 'string path-directory "new-p-test.lisp"))
                   (cl-fad:file-exists-p (concatenate 'string path-child-directory "new-p.lisp"))))
-    (delete-project path-directory)
+    (cl-fad:delete-directory-and-files path-directory)
     (not (null result))))
 
 (defun test-replace-markings-in-file-names-with-ignores ()
@@ -154,7 +154,7 @@
     (setf (gethash :SK-PROJECT-NAME hash-markings) "new-p")
     (replace-markings-in-file-names path-directory hash-markings ignores)
     (setf result (and (cl-fad:file-exists-p (concatenate 'string path-directory "new-p.lisp"))))
-    (delete-project path-directory)
+    (cl-fad:delete-directory-and-files path-directory)
     (not (null result))))
 
 (defun test-replace-markings-in-file ()
@@ -193,7 +193,7 @@
     (replace-markings-in-file path-directory hash-markings ignores)
     (setf result (and (string= "new-project" (get-string-from-file path-file-1))
                       (string= "SK-PROJECT-NAME by SK-AUTHOR" (get-string-from-file path-file-2))))
-    (delete-project path-directory)
+    (cl-fad:delete-directory-and-files path-directory)
     (not (null result))))
 
 (defun test-replace-markings ()
@@ -222,7 +222,7 @@
           (cl-fad:file-exists-p expected-path-file-2)
           (string= "new-project version 0.1.0" (get-string-from-file expected-path-file-1))
           (string= "new-project by your" (get-string-from-file expected-path-file-2))))
-    (delete-project path-directory)
+    (cl-fad:delete-directory-and-files path-directory)
     (not (null result))))
 
 (suite "Suite skeleton-creator-test"

@@ -59,7 +59,7 @@
                         (string= "The project description." (get-string-from-file path-file-2))
                         (string= "My new-project by you." (get-string-from-file path-file-3))
                         t)))
-    (delete-project-directory destination-path)
+    (cl-fad:delete-directory-and-files destination-path)
     result))
 
 (defun test-license-project ()
@@ -104,7 +104,8 @@
      "null-license"
      :create-license-file-p t
      :write-license-notices-p t
-     :write-in-readme-p t)
+     :write-in-readme-p t
+     :quiet t)
     (let ((expected-file-1 (format nil "~a~%~a"
                                    license-notice
                                    "My new-project in v1.0.4"))
@@ -135,7 +136,7 @@
                (string= expected-file-3 (get-string-from-file new-path-file-3))
                (string= expected-file-license (get-string-from-file new-path-file-license))  
                t)))
-    (delete-project-directory destination-path)
+    (cl-fad:delete-directory-and-files destination-path)
     result))
 
 (suite "Suite ui-skeleton-creator-test"

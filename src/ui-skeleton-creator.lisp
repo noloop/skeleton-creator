@@ -23,10 +23,87 @@
          (configure-skeleton-creator)
          (create-new-project-interactive force))))
 
-  (defun require-conf-directory-interactive (fn)
+  (defun license-project ()
+    (require-conf-directory-interactive
+     #'(lambda ()
+         (let ((notices-dir-exists-p
+                 (cl-fad:directory-exists-p (cl-fad:merge-pathnames-as-directory
+                                             (get-configure-directory)
+                                             "licenses/notices/"))))
+               (license-project-interactive notices-dir-exists-p)))
+     :check-license-dir-p t))
+
+  (defun delete-project-directory (project-directory)
+    (format t "~%~a ~a?~%" "Are you sure you want to delete the directory" project-directory)
+    (if (yes-or-no?)
+        (progn (delete-project project-directory)
+               (format t "~%~a~%" "Directory deleted successfully!"))
+        (format t "~%~a~%" "Nothing was excluded.")))
+
+  (defun create-new-project-interactive (force)
+    (format t "~%")
+    (let ((destination (read-field "Destination directory: "))
+          (name (read-field "Project name: "))
+          (description (read-field "Project description: ")))
+      (if (confirm-changes-p
+           (list "Destination directory:" "Project name:" "Project description:")
+           (list destination name description))       
+          (create-new-project-not-interactive destination
+                                              name
+                                              description
+                                              :force force)
+          (format t "~%~a~%" "Nothing changed!"))))
+
+  (defun license-project-interactive (notices-dir-exists-p)
+    (let* ((project-directory (read-field "Project directory to be licensed: "))
+           (license-name (read-field (format nil "License Name Used~a: " (get-license-names))))
+           (create-license-file-p (to-ask "Create LICENSE file?"))
+           (write-license-notices-p (if notices-dir-exists-p
+                                        (to-ask "Write license notice in the files?")
+                                        nil))
+           (string-ignores (if write-license-notices-p
+                               (read-field "You can ignore files and/or directories when writing the license notice on files. Accepts quoted names separated by space.(default: \"README.md\" \"LICENSE\" \".git/\"): ")
+                               "\"README.md\" \"LICENSE\" \".git/\""))
+           (ignores (if (string-empty-p string-ignores)
+                        "\"README.md\" \"LICENSE\" \".git/\""
+                        string-ignores))
+           (write-in-readme-p (if notices-dir-exists-p
+                                  (to-ask "Write license notice in the file README.md?")
+                                  nil)))
+      (if (confirm-changes-p (list "Project directory to be licensed:"
+                                   "License Name Used:"
+                                   "Create LICENSE file?"
+                                   "Write license notice in the files?"
+                                   "ignores:"
+                                   "Write license notice in the file README.md?")
+                             (list project-directory
+                                   license-name
+                                   create-license-file-p
+                                   write-license-notices-p
+                                   ignores
+                                   write-in-readme-p))
+          (license-project-not-interactive (pathname project-directory)
+                                           license-name
+                                           :create-license-file-p create-license-file-p
+                                           :write-license-notices-p write-license-notices-p
+                                           :ignores (read-from-string (conc "(" ignores ")"))
+                                           :write-in-readme-p write-in-readme-p)
+          (format t "~%~a~%" "Nothing changed!"))))
+
+  (defun get-license-names ()
+    (remove-if #'null
+               (mapcar
+                #'(lambda (i)
+                    (if (pathname-is-file i)
+                        (pathname-name i)))
+                (cl-fad:list-directory (cl-fad:merge-pathnames-as-directory
+                                        (get-configure-directory)
+                                        "licenses/")))))
+  
+  (defun require-conf-directory-interactive (fn &key check-license-dir-p)
     (let ((conf-dir-exists-p
             (cl-fad:directory-exists-p (get-configure-directory)))
-          (conf-file-exits-p
+          (conf-file-exists-p
             (cl-fad:file-exists-p (cl-fad:merge-pathnames-as-file
                                    (get-configure-directory)
                                    "skeleton-creator.conf")))
@@ -34,13 +111,22 @@
             (cl-fad:directory-exists-p (cl-fad:merge-pathnames-as-directory
                                         (get-configure-directory)
                                         "skeleton/")))
+          (license-dir-exists-p
+            (if check-license-dir-p
+                (cl-fad:directory-exists-p (cl-fad:merge-pathnames-as-directory
+                                            (get-configure-directory)
+                                            "licenses/"))
+                t))
           (msg-conf-dir-not-existing "Configuration directory not existing!")
           (msg-conf-file-not-existing "Configuration file(skeleton-creator.conf) not existing in the configuration directory.")
-          (msg-skeleton-not-existing "Skeleton directory(skeleton/) not existing in the configuration directory."))
+          (msg-skeleton-not-existing "Skeleton directory(skeleton/) not existing in the configuration directory.")
+          (msg-licenses-not-existing "The directory licenses/ or license/notices/ not existing in the configuration directory."))
       (if conf-dir-exists-p
-          (if conf-file-exits-p
+          (if conf-file-exists-p
               (if skeleton-dir-exists-p
-                  (funcall fn)
+                  (if (if check-license-dir-p license-dir-exists-p t)
+                      (funcall fn)
+                      (y-or-n-default-conf msg-licenses-not-existing fn))
                   (y-or-n-default-conf msg-skeleton-not-existing fn))
               (y-or-n-default-conf msg-conf-file-not-existing fn))
           (y-or-n-default-conf msg-conf-dir-not-existing fn))))
@@ -50,7 +136,13 @@
         (progn (copy-default-conf)
                (funcall fn)
                (format t "~%"))
-        (format t "~%~a~%" "No project directory was created! Configure a configuration directory that has at least one skeleton/ directory and a skeleton-creator.conf file inside it. Use the set-configure-directory and get-configure-directory functions to do this.")))
+        (format t "~%~a~%" "No project directory was created! Configure a configuration directory, Use the set-configure-directory and get-configure-directory functions to do this. Your configuration directory should look like this:
+
+skeleton-creator-conf/     ; or whatever name you want
+    skeleton/              ; the skeleton cloned while creating your projects
+    license/               ; your license files, the files should have type .txt
+        notices/           ; your notices files, the files should have type .txt
+    skeleton-creator.conf  ; skeleton-creator configuration file")))
 
   (defun use-default-conf-p (warning-msg)
     (format t "~a~%~%~a "
@@ -60,9 +152,9 @@
 
   (defun copy-default-conf ()
     (let* ((destination
-            (read-field "Configuration directory destination: "))
-          (conf-dir-destination
-            (cl-fad:merge-pathnames-as-directory destination "skeleton-creator-conf/")))
+             (read-field "Configuration directory destination: "))
+           (conf-dir-destination
+             (cl-fad:merge-pathnames-as-directory destination "skeleton-creator-conf/")))
       (ensure-directories-exist conf-dir-destination)
       (set-configure-directory conf-dir-destination)
       (copy-directory (cl-fad:merge-pathnames-as-directory
@@ -70,20 +162,6 @@
                        "default-conf/")
                       conf-dir-destination
                       :overwrite t)))
-
-  (defun create-new-project-interactive (force)
-    (format t "~%")
-    (let ((destination (read-field "Destination directory: "))
-          (name (read-field "Project name: "))
-          (description (read-field "Project description: ")))
-      (if (confirm-changes-p
-           (list "Destination directory" "Project name" "Project description")
-           (list destination name description))       
-          (create-new-project-not-interactive destination
-                                              name
-                                              description
-                                              :force force)
-          (format t "~%~a~%" "Nothing changed!"))))
 
   (defun confirm-changes-p (list-fields list-values)
     (format t "~%~a" "!!!CONFIRM CHANGES!!!")
@@ -93,17 +171,17 @@
         ((<= (length list-fields) i)
          (progn (format t "~%~%~a" "Do you want to complete the above changes?")
                 (yes-or-no?)))
-      (format t "~%~a: ~a" (car fields) (car values))))
- 
+      (format t "~%~a ~a" (car fields) (car values))))
+  
   (defun create-new-project-not-interactive (destination-directory name description
                                              &key quiet
                                                   force)
     (let* ((path-project
-            (cl-fad:merge-pathnames-as-directory
-             destination-directory
-             (conc name "/")))
-          (existing-directory-p
-            (cl-fad:directory-exists-p path-project)))
+             (cl-fad:merge-pathnames-as-directory
+              destination-directory
+              (conc name "/")))
+           (existing-directory-p
+             (cl-fad:directory-exists-p path-project)))
       (handler-case
           (if (and existing-directory-p (not force))
               (if (not quiet)
@@ -112,25 +190,11 @@
                      (if (not quiet)
                          (format t "~a" "Project created successfully."))))
         (error (c)
-          (format t "Got an exception: ~a~%" c)
+          (declare (ignore c))
           (if (empty-directory-p path-project)
               (delete-project-directory path-project))
           (if (not quiet)
               (format t "~a" "The project was NOT created successfully!"))))))
-
-  (defun license-project ()
-    ;; Verificar se o diretorio padrão contem um diretorio chamado licenses
-    ;; se não, então peguntar se quer usar o diretório padrão default-conf
-    ;; se sim, então continuar a função
-    ;; caso contrário perguntar se quer configurar um novo diretorio de configuração
-    ;; se sim configurá-lo,
-    ;; se não, retornar aviso que nada foi feito e que é preciso de um diretorio license
-    ;; dentro do diretorio de configuração
-    ;; caso tenha, verificar se existe um diretorio notices dentro de licenses,
-    ;; se não, então configurar as keys write-license-notices e write-in-readme para nil
-    ;; se tiver, então perguntar se quer escrever avisos nos arquivos e se quer escrever também no readme
-    ;; por sobrescrever arquivos é necessário que essa função confirme, mostrando tudo que irá ser alterado, antes de fazer as alterações, para que seja confirmado
-    )
 
   (defun license-project-not-interactive (project-directory license-name
                                           &key (ignores '("README.md"
@@ -138,21 +202,23 @@
                                                           ".git/"))
                                                (create-license-file-p t)
                                                (write-license-notices-p nil)
-                                               (write-in-readme-p nil))
-    (license-under project-directory
-                   (cl-fad:merge-pathnames-as-directory
-                    (get-conf-dir sk)
-                    "licenses/")
-                   license-name
-                   (get-hash-markings sk)
-                   ignores
-                   create-license-file-p
-                   write-license-notices-p
-                   write-in-readme-p))
-
-  (defun delete-project-directory (project-directory)
-    (format t "~%~a ~a?~%" "Are you sure you want to delete the directory" project-directory)
-    (if (yes-or-no?)
-        (progn (delete-project project-directory)
-               (format t "~%~a~%" "Directory deleted successfully!"))
-        (format t "~%~a~%" "Nothing was excluded."))))
+                                               (write-in-readme-p nil)
+                                               quiet)
+    (handler-case
+        (progn (license-under project-directory
+                              (cl-fad:merge-pathnames-as-directory
+                               (get-conf-dir sk)
+                               "licenses/")
+                              license-name
+                              (get-hash-markings sk)
+                              ignores
+                              create-license-file-p
+                              write-license-notices-p
+                              write-in-readme-p)
+               (if (not quiet)
+                   (format t "~a" "Project licensed successfully.")))
+      (error (c)
+        (declare (ignore c))
+        (if (not quiet)
+            (format t "~a" "The project was NOT licensed successfully!"))))))
+  

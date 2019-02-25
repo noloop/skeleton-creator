@@ -29,7 +29,7 @@
     (ensure-directories-exist path-licenses-directory)
     (write-string-in-file path-license "not licensed.")
     (setf actual-content (get-string-license path-licenses-directory license-name))
-    (delete-project-directory path-directory)
+    (cl-fad:delete-directory-and-files path-directory)
     (string= expected-content actual-content)))
 
 (defun test-create-license-file ()
@@ -50,7 +50,7 @@
     (setf actual-content
           (get-string-from-file
            (cl-fad:merge-pathnames-as-file path-project-directory "LICENSE")))
-    (delete-project-directory path-directory)
+    (cl-fad:delete-directory-and-files path-directory)
     (string= expected-content actual-content)))
 
 (defun test-get-notice-path ()
@@ -115,7 +115,7 @@
                (string= "license..." (get-string-from-file path-project-license))
                (string= "|# haa LICENSE NOTICE haa... |#" (get-string-from-file path-file-already-licensed))
                (every #'(lambda (i) (string= i expected-content)) (list actual-content-1 actual-content-2 actual-content-3))))
-    (delete-project-directory path-directory)
+    (cl-fad:delete-directory-and-files path-directory)
     result))
 
 (defun test-write-in-readme ()
@@ -146,7 +146,7 @@
     (write-in-readme path-project-directory path-notices-directory license-name hash-markings)
     (setf result
           (string= expected-content (get-string-from-file path-project-readme)))
-    (delete-project-directory path-directory)
+    (cl-fad:delete-directory-and-files path-directory)
     result))
 
 (defun test-write-in-readme-already-licensed ()
@@ -180,7 +180,7 @@
     (write-in-readme path-project-directory path-notices-directory license-name hash-markings)
     (setf result
           (string= expected-content (get-string-from-file path-project-readme)))
-    (delete-project-directory path-directory)
+    (cl-fad:delete-directory-and-files path-directory)
     result))
 
 (defun test-license-under ()
@@ -249,7 +249,7 @@
                (string= "|# haa LICENSE NOTICE haa... |#" (get-string-from-file path-file-already-licensed))
                (every #'(lambda (i) (string= i expected-notice-content))
                       (list actual-content-1 actual-content-2 actual-content-3))))
-    (delete-project-directory path-directory)
+    (cl-fad:delete-directory-and-files path-directory)
     result))
 
 (suite "Suite license-under-test"

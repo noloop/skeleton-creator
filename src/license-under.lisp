@@ -18,7 +18,8 @@
     (if write-license-notices-p
         (write-license-notices project-directory notices-directory license-name hash-markings ignores))
     (if write-in-readme-p
-        (write-in-readme project-directory notices-directory license-name hash-markings))))
+        (write-in-readme project-directory notices-directory license-name hash-markings))
+    t))
   
 (defun create-license-file (project-directory licenses-directory license-name)
   (write-string-in-file (cl-fad:merge-pathnames-as-file
