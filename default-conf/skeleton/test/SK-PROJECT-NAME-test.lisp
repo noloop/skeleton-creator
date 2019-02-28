@@ -1,4 +1,3 @@
-(in-package #:cl-user)
 (defpackage #:SK-AUTHOR.SK-PROJECT-NAME-test
   (:use #:common-lisp)
   (:nicknames #:SK-PROJECT-NAME-test)

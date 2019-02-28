@@ -3,7 +3,7 @@
 (defsystem :skeleton-creator
   :author "noloop <noloop@zoho.com>"
   :maintainer "noloop <noloop@zoho.com>"
-  :license "GNU General Public License v3.0"
+  :license "GPLv3"
   :version "1.0.0"
   :homepage "https://github.com/noloop/skeleton-creator"
   :bug-tracker "https://github.com/noloop/skeleton-creator/issues"
@@ -18,9 +18,6 @@
                  (:file "skeleton-creator" :depends-on ("package" "utils" "copy-directory"))
                  (:file "license-under" :depends-on ("skeleton-creator"))
                  (:file "ui-skeleton-creator" :depends-on ("skeleton-creator" "license-under")))))
-  :long-description
-  #.(uiop:read-file-string
-     (uiop:subpathname *load-pathname* "README.md"))
   :in-order-to ((test-op (test-op "skeleton-creator/test"))))
 
 (defsystem :skeleton-creator/test
