@@ -43,5 +43,5 @@ _**Note: Remember to configure asdf to find your directory where you downloaded 
 
 ## API
 
-function **(lib-function-name args)**
+function **(lib-function-name args)** => values
 
