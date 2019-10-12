@@ -18,7 +18,7 @@ Testei apenas no Linux usando o SBCL, não sei qual é o comportamento em outros
 
 ### Instalação e load
 
-**1 - Download skeleton-creator system usando o quicklisp**
+**1 - Load skeleton-creator system usando o quicklisp**
 
 No quicklisp:
 
@@ -26,7 +26,7 @@ No quicklisp:
 (ql:quickload :skeleton-creator)
 ```
 
-**2 - Instale o skeleton-creator diretamente do github e asdf**
+**2 - Download e load do skeleton-creator diretamente do github e asdf**
 
 Download diretamente do github:
 
@@ -34,13 +34,13 @@ Download diretamente do github:
 git clone https://github.com/noloop/skeleton-creator.git
 ```
 
-ou diretamente do asdf:
+e carregue o sistema usando o asdf:
 
 ```lisp
 (asdf:load-system :skeleton-creator)
 ```
 
-**Nota: Lembre-se de configurar o asdf para procurar no seu diretório onde guarda seus sistemas, para que o asdf consiga
+**Nota: Lembre-se de configurar o asdf para procurar o diretório onde você está guardando seus sistemas, para que o asdf consiga
 carregá-los corretamente, você pode saber mais aqui:  https://common-lisp.net/project/asdf/asdf/Configuring-ASDF-to-find-your-systems.html ou https://lisp-lang.org/learn/writing-libraries.**_
 
 ## Como skeleton-creator funciona?
