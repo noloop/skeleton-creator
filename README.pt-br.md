@@ -16,27 +16,22 @@ Testei apenas no Linux usando o SBCL, não sei qual é o comportamento em outros
 [:cl-fad](https://github.com/edicl/cl-fad)
 [:cl-ppcre](https://github.com/edicl/cl-ppcre)
 
-### Instalação
+### Instalação e load
 
-**1 - Download skeleton-creator system**
+**1 - Download skeleton-creator system usando o quicklisp**
 
 No quicklisp:
 
 ```
-IN PROGRESS...
+(ql:quickload :skeleton-creator)
 ```
 
-ou diretamente do github:
+**2 - Instale o skeleton-creator diretamente do github e asdf**
+
+Download diretamente do github:
 
 ```
 git clone https://github.com/noloop/skeleton-creator.git
-```
-**2 - Instale o skeleton-creator**
-
-By quicklisp:
-
-```
-IN PROGRESS...
 ```
 
 ou diretamente do asdf:
@@ -45,7 +40,8 @@ ou diretamente do asdf:
 (asdf:load-system :skeleton-creator)
 ```
 
-_**Note: Remember to configure asdf to find your directory where you downloaded the libraries (asdf call them "systems") above, if you do not know how to make a read at: https://common-lisp.net/project/asdf/asdf/Configuring-ASDF-to-find-your-systems.html or https://lisp-lang.org/learn/writing-libraries.**_
+**Nota: Lembre-se de configurar o asdf para procurar no seu diretório onde guarda seus sistemas, para que o asdf consiga
+carregá-los corretamente, você pode saber mais aqui:  https://common-lisp.net/project/asdf/asdf/Configuring-ASDF-to-find-your-systems.html ou https://lisp-lang.org/learn/writing-libraries.**_
 
 ## Como skeleton-creator funciona?
 

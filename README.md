@@ -16,30 +16,24 @@ I just tested on Linux using SBCL, I'm not sure what the behavior is in others, 
 [:cl-fad](https://github.com/edicl/cl-fad)
 [:cl-ppcre](https://github.com/edicl/cl-ppcre)
 
-### Instalation
 
-**1 - Download skeleton-creator system**
+### Download and load
 
-By quicklisp:
+**1 - Load skeleton-creator system by quicklisp**
 
 ```
-IN PROGRESS...
+(ql:quickload :skeleton-creator)
 ```
 
-or directly from github:
+**2 - Download and load skeleton-creator system by github and asdf**
+
+Download directly from github:
 
 ```
 git clone https://github.com/noloop/skeleton-creator.git
 ```
-**2 - Install skeleton-creator**
 
-By quicklisp:
-
-```
-IN PROGRESS...
-```
-
-or directly from asdf:
+and load by ASDF:
 
 ```lisp
 (asdf:load-system :skeleton-creator)
