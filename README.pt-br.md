@@ -16,7 +16,7 @@ Testei apenas no Linux usando o SBCL, não sei qual é o comportamento em outros
 [:cl-fad](https://github.com/edicl/cl-fad)
 [:cl-ppcre](https://github.com/edicl/cl-ppcre)
 
-### Instalação e load
+### Download e load
 
 **1 - Load skeleton-creator system usando o quicklisp**
 
