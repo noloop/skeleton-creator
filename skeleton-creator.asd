@@ -33,6 +33,4 @@
                  (:test-file "skeleton-creator-test")
                  (:test-file "license-under-test")
                  (:test-file "ui-skeleton-creator-test"))))
-  :perform (test-op (op c)
-                    (progn (funcall (intern #.(string :run-simplet-asdf) :simplet) c)
-                           (symbol-call :simplet '#:run))))
+  :perform (test-op (op c) (symbol-call :simplet '#:run)))
